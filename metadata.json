@@ -1,0 +1,6 @@
+{
+  "name": "Copy of Photo to Cartoon Converter",
+  "description": "An application that uses AI to convert any uploaded photo into a stylish black and white cartoon image.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
