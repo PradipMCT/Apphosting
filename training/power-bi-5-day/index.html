@@ -1,0 +1,1168 @@
+<title>Power BI Ready Reckoner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F5F6F8; --surface:#FFFFFF; --surface-2:#EFF1F4; --surface-3:#E7EAEF;
+  --ink:#191D25; --ink-2:#39404D; --muted:#69727F; --line:#DCE0E7; --line-2:#C7CDD6;
+  --accent:#8F6A00; --accent-fill:#E9B31A; --accent-soft:#FBF0D2; --accent-line:#E3CD8A;
+  --teal:#0D6467; --teal-fill:#128C90; --teal-soft:#DDEEEE;
+  --rose:#98303F; --rose-fill:#C14A5B; --rose-soft:#F9E3E6;
+  --ring-track:#DCE0E7;
+  --shadow:0 1px 2px rgba(20,25,35,.05), 0 8px 24px -14px rgba(20,25,35,.22);
+  --display:'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --body:'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --mono:'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1117; --surface:#161B23; --surface-2:#1C232E; --surface-3:#232B38;
+    --ink:#E9EDF4; --ink-2:#C2CAD6; --muted:#8C96A6; --line:#2A323F; --line-2:#3A4454;
+    --accent:#F0C24B; --accent-fill:#E9B31A; --accent-soft:#2B2409; --accent-line:#5A4A12;
+    --teal:#63CBCE; --teal-fill:#17A4A8; --teal-soft:#0D2A2B;
+    --rose:#F0909F; --rose-fill:#C3505F; --rose-soft:#2E161A;
+    --ring-track:#2A323F;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 26px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1117; --surface:#161B23; --surface-2:#1C232E; --surface-3:#232B38;
+  --ink:#E9EDF4; --ink-2:#C2CAD6; --muted:#8C96A6; --line:#2A323F; --line-2:#3A4454;
+  --accent:#F0C24B; --accent-fill:#E9B31A; --accent-soft:#2B2409; --accent-line:#5A4A12;
+  --teal:#63CBCE; --teal-fill:#17A4A8; --teal-soft:#0D2A2B;
+  --rose:#F0909F; --rose-fill:#C3505F; --rose-soft:#2E161A;
+  --ring-track:#2A323F;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 26px -16px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.015em}
+a{color:var(--accent);text-underline-offset:3px}
+code,kbd{font-family:var(--mono)}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:20px}
+
+/* ---------- header ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:color-mix(in srgb, var(--surface) 92%, transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{display:flex;align-items:center;gap:18px;padding-block:12px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;gap:2px;margin-right:auto;min-width:200px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.brand h1{font-size:20px;font-weight:800;line-height:1.1}
+.ringwrap{display:flex;align-items:center;gap:11px}
+.ring{width:46px;height:46px;flex:none}
+.ring circle{fill:none;stroke-width:5}
+.ring .tk{stroke:var(--ring-track)}
+.ring .fg{stroke:var(--accent-fill);stroke-linecap:round;transition:stroke-dashoffset .45s ease}
+.ringtxt{display:flex;flex-direction:column;line-height:1.15}
+.ringtxt b{font-family:var(--display);font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.ringtxt span{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.btn{font-family:var(--body);font-size:12.5px;font-weight:500;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);padding:7px 12px;border-radius:7px;cursor:pointer}
+.btn:hover{border-color:var(--line-2);color:var(--ink)}
+.btn:focus-visible,.tab:focus-visible,.chk:focus-visible{outline:2px solid var(--accent-fill);outline-offset:2px}
+
+/* ---------- tabs ---------- */
+.tabsbar{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:calc(env(safe-area-inset-top,0px) + 71px);z-index:35}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-block:7px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;display:flex;align-items:center;gap:8px;font-family:var(--body);font-size:13px;font-weight:500;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--ink);background:var(--surface-2)}
+.tab[aria-selected="true"]{color:var(--ink);background:var(--accent-soft);border-color:var(--accent-line)}
+.tab .pct{font-family:var(--mono);font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tab[aria-selected="true"] .pct{color:var(--accent)}
+
+/* ---------- day hero ---------- */
+.hero{padding-block:30px 22px;border-bottom:1px solid var(--line);margin-bottom:26px}
+.hero-top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.daynum{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent-line);padding:4px 9px;border-radius:5px}
+.hero h2{font-size:clamp(25px,4.2vw,37px);font-weight:800;line-height:1.06;margin-top:12px;max-width:22ch}
+.hero .lede{color:var(--ink-2);font-size:16px;max-width:62ch;margin-top:12px}
+.outcome{margin-top:18px;display:flex;gap:11px;align-items:flex-start;padding:13px 15px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent-fill);border-radius:0 9px 9px 0;max-width:72ch}
+.outcome .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);flex:none;padding-top:3px}
+.outcome p{margin:0;font-size:14.5px;color:var(--ink)}
+.dayprog{margin-top:18px;max-width:420px}
+.bar{height:6px;background:var(--ring-track);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent-fill);border-radius:99px;transition:width .4s ease}
+.dayprog .meta{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:6px;font-variant-numeric:tabular-nums}
+
+/* ---------- schedule ---------- */
+.sched{display:flex;flex-direction:column;gap:14px;padding-bottom:60px}
+.brk{display:flex;align-items:center;gap:13px;padding:9px 4px;color:var(--muted);font-size:12.5px}
+.brk .t{font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums;flex:none}
+.brk .ln{flex:1;border-top:1px dashed var(--line-2)}
+.brk .nm{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;flex:none}
+
+.block{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.bhead{display:flex;gap:16px;align-items:flex-start;padding:18px 20px 16px;border-bottom:1px solid var(--line)}
+.btime{flex:none;display:flex;flex-direction:column;gap:3px;min-width:96px}
+.btime .clock{font-family:var(--mono);font-size:12.5px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
+.btime .dur{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.btime .seg{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-top:3px}
+.bmain{flex:1;min-width:0}
+.bmain h3{font-size:19px;font-weight:700;line-height:1.2}
+.bmain .goal{color:var(--ink-2);font-size:14px;margin-top:6px;max-width:66ch}
+.bcount{flex:none;font-family:var(--mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:4px}
+.bbody{padding:6px 20px 20px}
+
+/* ---------- checklist ---------- */
+.list{list-style:none;margin:0;padding:0}
+.item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid color-mix(in srgb, var(--line) 60%, transparent)}
+.item:last-child{border-bottom:0}
+.chk{flex:none;margin-top:2px;width:19px;height:19px;border:1.5px solid var(--line-2);border-radius:5px;background:var(--surface);cursor:pointer;display:grid;place-items:center;padding:0;transition:background .15s,border-color .15s}
+.chk svg{width:11px;height:11px;opacity:0;transform:scale(.6);transition:opacity .15s,transform .15s}
+.chk[aria-checked="true"]{background:var(--accent-fill);border-color:var(--accent-fill)}
+.chk[aria-checked="true"] svg{opacity:1;transform:scale(1)}
+.chk svg path{stroke:#17140A;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.itxt{min-width:0;cursor:pointer}
+.itxt .t{font-size:14.5px;color:var(--ink);font-weight:500}
+.itxt .d{font-size:13px;color:var(--muted);margin-top:2px}
+.item.done .itxt .t{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line-2)}
+.item.done .itxt .d{opacity:.6}
+
+/* ---------- sub panels ---------- */
+.sub{margin-top:16px;border-radius:10px;padding:14px 16px;border:1px solid var(--line)}
+.sub h4{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:500;margin-bottom:9px}
+.sub.lab{background:var(--teal-soft);border-color:color-mix(in srgb,var(--teal-fill) 32%, transparent)}
+.sub.lab h4{color:var(--teal)}
+.sub.lab .labname{font-family:var(--body);font-weight:600;font-size:14.5px;color:var(--ink);margin-bottom:8px}
+.sub.trap{background:var(--rose-soft);border-color:color-mix(in srgb,var(--rose-fill) 30%, transparent)}
+.sub.trap h4{color:var(--rose)}
+.sub.trap ul{margin:0;padding-left:18px;font-size:13.5px;color:var(--ink-2)}
+.sub.trap li{margin-bottom:5px}
+.sub.links{background:var(--surface-2)}
+.sub.links h4{color:var(--muted)}
+.linkrow{display:flex;flex-wrap:wrap;gap:7px}
+.linkrow a{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;text-decoration:none;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);padding:5px 10px;border-radius:99px}
+.linkrow a:hover{border-color:var(--accent-line);color:var(--accent)}
+.linkrow a::after{content:'↗';font-size:10px;color:var(--muted)}
+.steps{margin:0;padding-left:19px;font-size:13.5px;color:var(--ink-2)}
+.steps li{margin-bottom:5px}
+pre{margin:10px 0 0;background:var(--surface-3);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font-family:var(--mono);font-size:12.3px;line-height:1.6;color:var(--ink-2)}
+.codelabel{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-top:14px}
+.codelabel b{color:var(--accent);font-weight:500}
+
+/* ---------- generic content cards ---------- */
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(248px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:17px 18px}
+.card h4{font-size:15.5px;font-weight:700;margin-bottom:8px}
+.card p{margin:0;font-size:13.5px;color:var(--ink-2)}
+.card ul{margin:8px 0 0;padding-left:17px;font-size:13.5px;color:var(--ink-2)}
+.card li{margin-bottom:4px}
+.sect{margin-bottom:34px}
+.sect > h3{font-size:14px;font-family:var(--mono);font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:16px}
+table.rhythm{width:100%;border-collapse:collapse;font-size:13.5px}
+table.rhythm th,table.rhythm td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+table.rhythm th{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500}
+table.rhythm td:first-child{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
+table.rhythm tr.br td{color:var(--muted);background:var(--surface-2)}
+.tblwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:11px}
+.map{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.mapcard{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent-fill);border-radius:3px 3px 11px 11px;padding:15px 16px}
+.mapcard .n{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.mapcard h4{font-size:15px;font-weight:700;margin:6px 0 7px;line-height:1.25}
+.mapcard p{margin:0;font-size:12.8px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);max-width:70ch}
+.pill{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:4px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted);vertical-align:middle;margin-left:7px}
+.pill.demo{background:var(--rose-soft);border-color:color-mix(in srgb,var(--rose-fill) 30%,transparent);color:var(--rose)}
+.pill.new{background:var(--accent-soft);border-color:var(--accent-line);color:var(--accent)}
+.savenote{font-size:11.5px;color:var(--muted);font-family:var(--mono)}
+footer{border-top:1px solid var(--line);padding-block:24px 40px;color:var(--muted);font-size:12.5px}
+@media (max-width:720px){
+  .tabsbar{top:calc(env(safe-area-inset-top,0px) + 108px)}
+  .bhead{flex-wrap:wrap;gap:10px}
+  .btime{flex-direction:row;align-items:baseline;gap:9px;min-width:0}
+  .btime .seg{margin-top:0}
+  .bcount{width:100%}
+  .brand{min-width:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="topbar"><div class="wrap topbar-in">
+  <div class="brand">
+    <span class="eyebrow">Five-day intensive · Intermediate → Advanced</span>
+    <h1>Power BI Ready Reckoner</h1>
+  </div>
+  <div class="ringwrap">
+    <svg class="ring" viewBox="0 0 44 44" aria-hidden="true">
+      <circle class="tk" cx="22" cy="22" r="18"></circle>
+      <circle class="fg" id="ringfg" cx="22" cy="22" r="18" transform="rotate(-90 22 22)" stroke-dasharray="113.1" stroke-dashoffset="113.1"></circle>
+    </svg>
+    <div class="ringtxt"><b id="pctTxt">0%</b><span id="cntTxt">0 / 0 done</span></div>
+  </div>
+  <button class="btn" id="resetBtn" type="button">Reset progress</button>
+</div></header>
+
+<nav class="tabsbar"><div class="wrap"><div class="tabs" id="tabs" role="tablist"></div></div></nav>
+
+<main class="wrap" id="view" role="main"></main>
+
+<footer class="wrap">
+  <div id="saveNote" class="savenote">Progress is saved as you tick.</div>
+  <p style="margin:8px 0 0">Built for a Power BI Desktop + Power BI Pro classroom. Microsoft Fabric-specific capabilities are deliberately out of scope; items marked <span class="pill demo">demo</span> need PPU/Premium and are shown, not practised.</p>
+</footer>
+
+<script>
+/* ============================ COURSE CONTENT ============================ */
+var SCHEDULE = [
+  {k:"b", seg:"Block 1", t:"09:30 – 11:15", d:"1h 45m"},
+  {k:"break", t:"11:15 – 11:30", n:"Tea break"},
+  {k:"b", seg:"Block 2", t:"11:30 – 13:15", d:"1h 45m"},
+  {k:"break", t:"13:15 – 14:00", n:"Lunch"},
+  {k:"b", seg:"Block 3", t:"14:00 – 15:45", d:"1h 45m"},
+  {k:"break", t:"15:45 – 16:00", n:"Tea break"},
+  {k:"b", seg:"Block 4", t:"16:00 – 17:30", d:"1h 30m"}
+];
+
+var DAYS = [
+{
+ n:"Day 1", title:"Power Query and the M language",
+ lede:"The week starts where every performance and correctness problem starts: the data that arrives. By the end of today nobody in the room is clicking buttons and hoping — everyone can read, write and debug M, and can tell whether a query folds.",
+ outcome:"You can open the Advanced Editor without fear, write a reusable custom function, and force a query to fold back to the source.",
+ blocks:[
+ {
+  title:"Architecture, level-set, and the program you are actually writing",
+  goal:"Get a mixed-ability room onto one mental model of how a .pbix executes, then prove that Applied Steps are source code.",
+  topics:[
+   {t:"The three layers of every Power BI solution", d:"Power Query (M) shapes → VertiPaq compresses and stores → DAX calculates → the visual renders. Learn to name which layer a problem lives in before you fix it."},
+   {t:"Level-set diagnostic (10 questions, 15 minutes)", d:"Not graded. Used to pair a confident learner with a steadier one for the whole week, and to decide which stretch tasks to hand out."},
+   {t:"Storage modes: Import, DirectQuery, Dual, Live Connect", d:"What each costs in refresh time, query time, model size and feature availability. Build the decision matrix you will reuse on Day 2."},
+   {t:"Anatomy of the Power Query Editor", d:"Queries pane, Applied Steps, formula bar, Advanced Editor, Query Dependencies view, query groups."},
+   {t:"Applied Steps are a let expression", d:"Every step is a named variable; the last one is returned by in. Renaming steps, reordering steps safely, and the hash-plus-quotes escape that lets a step name contain spaces."},
+   {t:"Staging queries and load behaviour", d:"Enable load off, Include in report refresh, Reference vs Duplicate, and why a referenced query re-executes rather than caching."},
+   {t:"Data types, locale and the Changed Type trap", d:"Explicit typing, Using Locale for regional dates and decimals, and why the auto-generated Changed Type step breaks when a source column is renamed."},
+   {t:"Connectors and the navigation step", d:"How a connector returns a navigation table (Name / Data / Kind / Item) and how to navigate it by code instead of by click."},
+   {t:"Parameters as first-class objects", d:"Server, database, file path and environment parameters. The foundation for templates and for switching dev/test/prod on Day 5."},
+   {t:"Class environment check: Contoso and AdventureWorks loaded", d:"Everyone connects to the same sample data so every later lab starts from the same place."}
+  ],
+  code:[{lang:"M", label:"What the UI writes for you",
+   src:"let\n    Source     = Sql.Database(SrvParam, DbParam),\n    Sales      = Source{[Schema=\"dbo\", Item=\"FactSales\"]}[Data],\n    Narrowed   = Table.SelectColumns(Sales, {\"DateKey\",\"ProductKey\",\"StoreKey\",\"SalesAmount\",\"Quantity\"}),\n    Recent     = Table.SelectRows(Narrowed, each [DateKey] >= #date(2022,1,1)),\n    Typed      = Table.TransformColumnTypes(Recent, {{\"SalesAmount\", Currency.Type},{\"Quantity\", Int64.Type}})\nin\n    Typed"}],
+  lab:{title:"Read the machine", steps:[
+   "Load FactSales from Contoso and open the Advanced Editor.",
+   "Delete the auto-generated Changed Type step and retype the columns explicitly at the end.",
+   "Rename every step to something a colleague would understand.",
+   "Move the row filter and the column removal to the top and compare the step list."]},
+  traps:[
+   "Auto Changed Type hard-codes column names, so any source rename breaks refresh.",
+   "Regional settings silently turning 1.234 into 1234 (or a date into next month).",
+   "Treating Applied Steps as an undo history rather than as code you own."],
+  links:[
+   {t:"Power Query M reference", u:"https://learn.microsoft.com/en-us/powerquery-m/"},
+   {t:"Storage mode guidance", u:"https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-storage-mode"},
+   {t:"Query Editor overview", u:"https://learn.microsoft.com/en-us/power-query/power-query-what-is-power-query"}]
+ },
+ {
+  title:"The M language properly: values, types, functions",
+  goal:"Stop treating M as a UI by-product. Write it from a blank editor.",
+  topics:[
+   {t:"M is functional, case-sensitive and lazily evaluated", d:"What each of those three words changes about how you write and debug a query."},
+   {t:"Primitive values and null semantics", d:"Three-valued logic: null = null is null, not true. Coalesce with ?? and guard comparisons."},
+   {t:"Structured values: list, record, table", d:"Build them by hand: {1,2,3}, [Name=\"A\", Qty=3], #table(...). This is the whole language."},
+   {t:"Indexing and lookup syntax", d:"list{0} positional, record[Field] by name, table{0}[Column] combined, and the optional forms list{0}? and record[Field]?."},
+   {t:"each is sugar for (_) =>", d:"When to drop each and name your parameter — nested contexts where the implicit underscore becomes ambiguous."},
+   {t:"The table function toolkit", d:"Table.SelectRows, Table.AddColumn, Table.TransformColumns, Table.SelectColumns, Table.RenameColumns, Table.Group, Table.NestedJoin, Table.ExpandTableColumn."},
+   {t:"The list function toolkit", d:"List.Transform, List.Select, List.Accumulate, List.Generate, List.Zip, List.Distinct — and where each replaces a clumsy table operation."},
+   {t:"The record function toolkit", d:"Record.Field, Record.FieldNames, Record.AddField, Record.TransformFields, and the habit of expanding only the fields you need."},
+   {t:"Writing custom functions", d:"(SourceTable as table, optional Threshold as number) as table => ... ; converting a query into a function; Invoke Custom Function on a column."},
+   {t:"Types: ascription vs conversion", d:"as vs Table.TransformColumnTypes, type table [A=text, B=number], Value.Type, and why ascription can lie to you."},
+   {t:"Error handling", d:"try ... otherwise, try ... catch, the Error.Record shape, row-level versus step-level errors, and Keep Errors as a triage tool."},
+   {t:"#shared and self-documenting functions", d:"Explore the entire built-in library from a blank query, and attach metadata so your own functions show a documentation dialog."}
+  ],
+  code:[{lang:"M", label:"A reusable, documented function",
+   src:"let\n    fnSafeDivide = (Numerator as nullable number, Denominator as nullable number,\n                    optional Alternate as number) as nullable number =>\n        if Denominator = null or Denominator = 0 then Alternate\n        else Numerator / Denominator,\n\n    Documented = Value.ReplaceType(fnSafeDivide,\n        Value.ReplaceMetadata(Value.Type(fnSafeDivide),\n            [Documentation.Name = \"fnSafeDivide\",\n             Documentation.LongDescription = \"Divides and returns Alternate on a zero or null denominator.\"]))\nin\n    Documented"}],
+  lab:{title:"Build your function library", steps:[
+   "Write fnStandardiseCustomer that trims, cleans and proper-cases a customer name and strips duplicate spaces.",
+   "Convert an existing query into a function that takes a year parameter.",
+   "Invoke it across a list of years and append the results.",
+   "Add documentation metadata and check the generated invoke dialog."]},
+  traps:[
+   "Reaching for Table.Buffer reflexively — it kills folding and pins the table in memory.",
+   "each [Col] inside a nested each, where the underscore no longer means what you think.",
+   "Type ascription used to 'fix' a data type without actually converting the values."],
+  links:[
+   {t:"M function reference by category", u:"https://learn.microsoft.com/en-us/powerquery-m/power-query-m-function-reference"},
+   {t:"M language specification", u:"https://learn.microsoft.com/en-us/powerquery-m/power-query-m-language-specification"},
+   {t:"Gorilla BI — M deep dives", u:"https://gorilla.bi/power-query/"}]
+ },
+ {
+  title:"Real-world ETL patterns",
+  goal:"The dozen shapes of messy data you will actually be handed, and the canonical fix for each.",
+  topics:[
+   {t:"Combine Files from Folder, done properly", d:"Sample file, transform-file function, the generated helper queries — and how to repair them when the generated code breaks on a new file layout."},
+   {t:"Taming Excel workbooks", d:"Merged cells, multi-row headers, Table.Skip plus Table.PromoteHeaders, and the difference between a sheet, a named range and a real Excel table."},
+   {t:"Unpivot and Unpivot Other Columns", d:"The single most valuable transform in Power Query: turning a spreadsheet cross-tab into a fact table. Plus Pivot and when its aggregation matters."},
+   {t:"Group By with All Rows", d:"The pattern behind top-N-per-group, first/last row per key, and de-duplication that keeps the right row."},
+   {t:"Merge semantics in full", d:"Inner, Left Outer, Right Outer, Full Outer, Left Anti, Right Anti — and using anti joins as automated data-quality tests."},
+   {t:"Fuzzy merge", d:"Similarity threshold, transformation tables, and an honest conversation about when fuzzy matching is acceptable in a finance report."},
+   {t:"Append, and surviving schema drift", d:"Appending many queries, handling a source that adds or renames a column, and Table.SelectColumns with MissingField.UseNull."},
+   {t:"Column From Examples, Conditional Column, Index Column", d:"What each one generates, and which of them break folding."},
+   {t:"Text wrangling", d:"Splitter functions, Text.BetweenDelimiters, Text.Trim / Clean / Proper, and extracting from semi-structured codes."},
+   {t:"Dates and time zones", d:"Date.From, DateTime.Date, DateTimeZone handling, and building a calendar table in M with List.Dates."},
+   {t:"Column quality, distribution and profile panes", d:"Switch profiling to the entire dataset — profiling the top 1000 rows and declaring the data clean is a classic self-inflicted wound."},
+   {t:"RangeStart and RangeEnd parameters", d:"The exact parameter shape incremental refresh requires. Set it up now; switch it on in the Service on Day 5."}
+  ],
+  lab:{title:"Two messy sources, one clean fact table", steps:[
+   "Combine a folder of monthly sales CSVs into one query with a transform-file function.",
+   "Import a budget workbook with a two-row header and a cross-tab of months, and unpivot it.",
+   "Use an anti join to list budget rows whose product code does not exist in the product master.",
+   "Land both at a single agreed grain and document that grain in the query description."]},
+  traps:[
+   "Referring to columns by position instead of by name.",
+   "Hard-coded local file paths that nobody else in the team can refresh.",
+   "Profiling on 1000 rows and concluding the source is clean."],
+  links:[
+   {t:"Combine files from a folder", u:"https://learn.microsoft.com/en-us/power-query/combine-files-overview"},
+   {t:"Unpivot columns", u:"https://learn.microsoft.com/en-us/power-query/unpivot-column"},
+   {t:"Fuzzy merge", u:"https://learn.microsoft.com/en-us/power-query/merge-queries-fuzzy-match"}]
+ },
+ {
+  title:"Query folding, diagnostics and refresh performance",
+  goal:"Turn refresh time from a mystery into a measurement.",
+  topics:[
+   {t:"What query folding is", d:"Power Query translating your steps into the source system's own query language. The single biggest lever on refresh duration."},
+   {t:"View Native Query", d:"Reading the generated SQL, and what a greyed-out menu item actually tells you about the step before it."},
+   {t:"Folding indicators in the modern editor", d:"The 2026 editor surfaces folding status earlier, so you can catch a break while you build rather than in production."},
+   {t:"Known folding breakers", d:"Table.Buffer, index columns, most custom M functions, Column From Examples, some merges, and re-typing after a non-foldable step."},
+   {t:"Step order for folding", d:"Filter rows and remove columns first, always. Everything expensive comes after the data has shrunk."},
+   {t:"Native SQL that still folds", d:"Value.NativeQuery with EnableFolding=true, and when handing the source a view is better than either."},
+   {t:"Query Diagnostics", d:"Start and stop diagnostics, Diagnose Step, and reading the session and detailed traces to find the slow step."},
+   {t:"The data privacy firewall", d:"Privacy levels, the Formula.Firewall error, and why 'ignore privacy levels' can transform refresh time — along with why that is a decision, not a default."},
+   {t:"Buffering on purpose", d:"The narrow case where Table.Buffer or List.Buffer genuinely helps: a small table scanned repeatedly by a custom function."},
+   {t:"Reference chains and re-execution", d:"Why a query referenced by five others may run five times, and when to stage into a dataflow instead."},
+   {t:"Dataflows (Gen1) on a Pro workspace", d:"Shared, reusable ETL and linked entities — when the reuse justifies the extra hop, and when it does not."},
+   {t:"Incremental refresh policy design", d:"Partitions, archive period, incremental period, Detect data changes, and the folding requirement that makes it all work."}
+  ],
+  code:[{lang:"M", label:"Native query that still folds",
+   src:"let\n    Source = Value.NativeQuery(\n        Sql.Database(SrvParam, DbParam),\n        \"SELECT DateKey, ProductKey, SUM(SalesAmount) AS Sales\n           FROM dbo.FactSales\n          WHERE DateKey >= @from\n          GROUP BY DateKey, ProductKey\",\n        [from = RangeStart],\n        [EnableFolding = true])\nin\n    Source"}],
+  lab:{title:"Make it fold", steps:[
+   "Take a supplied query that breaks folding at step three and re-order it so the whole query folds.",
+   "Prove it with View Native Query.",
+   "Time the refresh before and after with Query Diagnostics.",
+   "Set RangeStart / RangeEnd and define an incremental refresh policy on the fact table."]},
+  traps:[
+   "One giant query doing connection, cleaning, business logic and shaping in forty steps.",
+   "Doing in M what the source database should do in a view.",
+   "Doing in M what the model should do in DAX — and vice versa."],
+  links:[
+   {t:"Query folding guidance", u:"https://learn.microsoft.com/en-us/power-query/power-query-folding"},
+   {t:"Query diagnostics", u:"https://learn.microsoft.com/en-us/power-query/query-diagnostics"},
+   {t:"Incremental refresh", u:"https://learn.microsoft.com/en-us/power-bi/connect-data/incremental-refresh-overview"},
+   {t:"Chris Webb on folding", u:"https://blog.crossjoin.co.uk/category/power-query/"}]
+ }]
+},
+{
+ n:"Day 2", title:"The model is the product",
+ lede:"Today is the day the course earns its fee. We look inside VertiPaq, build a proper star schema, and then run seven clinics where a bad model forces terrible DAX — and a small model change makes the DAX collapse to one line.",
+ outcome:"You can diagnose a model from its storage statistics, redesign it into a star, and argue for a model change instead of a 40-line measure.",
+ blocks:[
+ {
+  title:"VertiPaq: what the engine does with your columns",
+  goal:"Understand compression well enough to predict which column is costing you the most.",
+  topics:[
+   {t:"Columnar storage", d:"Power BI stores columns, not rows. Every design decision follows from that one fact."},
+   {t:"Encoding methods", d:"Value encoding, hash/dictionary encoding and run-length encoding; how the engine chooses, and how re-encoding during refresh can surprise you."},
+   {t:"Cardinality is the cost driver", d:"Not row count. Work the arithmetic on a 10-million-row fact table with one datetime column at second precision."},
+   {t:"Segments, partitions and sort order", d:"Why the order rows arrive in changes how well they compress."},
+   {t:"VertiPaq Analyzer", d:"Via DAX Studio or Bravo: table size, column size, dictionary size, cardinality, percent of total. Learn to read the table in 60 seconds."},
+   {t:"The usual offenders", d:"Datetime at second precision, GUID keys, free-text notes, high-precision decimals, and ID columns kept just in case."},
+   {t:"Surgical fixes", d:"Split datetime into date plus time bucket; reduce decimal precision; choose Fixed Decimal over Decimal; drop keys you never join on."},
+   {t:"Turn off Auto date/time", d:"See exactly what the hidden per-column date tables were costing you, then never turn it back on."},
+   {t:"Hiding versus removing", d:"Hiding is cosmetic. Removing is performance. Know which one you just did."},
+   {t:"Calculated columns and compression", d:"Where they are materialised, why they compress worse than imported columns, and the push-it-upstream rule."},
+   {t:"Model size budget on Pro", d:"1 GB per semantic model. How to design inside that ceiling instead of discovering it on publish day."}
+  ],
+  lab:{title:"Cut the model, keep the report", steps:[
+   "Run VertiPaq Analyzer over the supplied Contoso model and screenshot the top ten columns by size.",
+   "Remove, split or retype until the model is at least 30 percent smaller.",
+   "Refresh every report page and confirm nothing broke.",
+   "Write one sentence per change explaining what you traded away."]},
+  links:[
+   {t:"DAX Studio", u:"https://daxstudio.org/"},
+   {t:"VertiPaq Analyzer", u:"https://www.sqlbi.com/tools/vertipaq-analyzer/"},
+   {t:"Data reduction techniques", u:"https://learn.microsoft.com/en-us/power-bi/guidance/import-modeling-data-reduction"},
+   {t:"Bravo for Power BI", u:"https://bravo.bi/"}]
+ },
+ {
+  title:"Star schema and relationship mechanics",
+  goal:"Be able to draw the right model on a whiteboard before touching Power BI.",
+  topics:[
+   {t:"Fact and dimension", d:"The vocabulary, and the discipline of declaring the grain of every fact table out loud before you build anything."},
+   {t:"Why star beats snowflake in VertiPaq", d:"Fewer hops, better compression, simpler DAX — and the two or three cases where a snowflake is genuinely fine."},
+   {t:"Conformed dimensions", d:"One Date, one Product, one Customer shared by every fact. The test that tells you whether two tables can share a dimension."},
+   {t:"Relationship cardinality", d:"One-to-many, one-to-one and physical many-to-many, and precisely what each does to filter propagation."},
+   {t:"Cross-filter direction", d:"Single versus both, ambiguity errors, and why Both is a loaded gun rather than a convenience."},
+   {t:"How filters actually propagate", d:"Down from the one side to the many side, never the other way, unless you explicitly say so. Everything else follows."},
+   {t:"Active and inactive relationships", d:"Role-playing dimensions (Order Date, Ship Date, Due Date) and the two legitimate strategies: USERELATIONSHIP, or duplicated dimension tables."},
+   {t:"The date table", d:"Contiguous dates, full years, Mark as Date Table, and why built-in time intelligence refuses to work without it."},
+   {t:"Referential integrity and the blank row", d:"What an orphaned key looks like to an end user, and how to detect it in Power Query before it reaches the model."},
+   {t:"Key design", d:"Surrogate versus natural keys, and why a composite key must be collapsed into a single column before it becomes a relationship."},
+   {t:"Bridge tables for real many-to-many", d:"Customer to account, product to category set, salesperson to territory — modelled once, correctly."},
+   {t:"Hierarchies and Sort by Column", d:"Building usable hierarchies, and decoding the 'must be one-to-one' and circular dependency errors that Sort by Column throws."}
+  ],
+  lab:{title:"Snowflake to star", steps:[
+   "Take the snowflaked AdventureWorks import and flatten Product / Subcategory / Category into one dimension.",
+   "Build a proper Date table and mark it as a date table.",
+   "Wire Order Date as the active relationship and Ship Date as inactive.",
+   "Document the grain of each fact table in the table description field."]},
+  links:[
+   {t:"Star schema guidance", u:"https://learn.microsoft.com/en-us/power-bi/guidance/star-schema"},
+   {t:"Model relationships", u:"https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-relationships-understand"},
+   {t:"Bidirectional relationship guidance", u:"https://learn.microsoft.com/en-us/power-bi/guidance/relationships-bidirectional-filtering"},
+   {t:"RADACAD — basics of modelling", u:"https://radacad.com/power-bi-basics-of-modeling-star-schema-and-how-to-build-it"}]
+ },
+ {
+  title:"The model that creates the problem: seven before-and-after clinics",
+  goal:"Prove, seven times in a row, that a model change is cheaper than a DAX workaround. Each clinic shows the measure you are forced to write, then the measure you get to write after the model changes.",
+  topics:[
+   {t:"Clinic 1 — Slicing by a column on the fact table", d:"No dimension, so every selection needs ALL and VALUES gymnastics. Add the dimension: the measure becomes one line and the slicer gets faster."},
+   {t:"Clinic 2 — Two facts at different grains", d:"Daily Sales against monthly Budget. Before: TREATAS and SUMMARIZE everywhere. After: shared Date and Product dimensions joined at the common grain."},
+   {t:"Clinic 3 — Header and detail", d:"Order header freight and discount double-counted across lines. Before: SUMX over a de-duplicated header set. After: a separate header fact, or allocation down to line grain in Power Query."},
+   {t:"Clinic 4 — LOOKUPVALUE instead of a relationship", d:"Calculated columns fetching values across tables, slowing refresh and bloating the model. After: a relationship plus RELATED / RELATEDTABLE, and the calculated columns disappear."},
+   {t:"Clinic 5 — Bidirectional filtering as a crutch", d:"Ambiguous paths, RLS leakage and slow queries. After: a bridge table with single direction, plus CROSSFILTER or TREATAS only at the exact measure that needs it."},
+   {t:"Clinic 6 — Slowly changing dimensions", d:"Reporting 'as it is now' versus 'as it was then'. Type 1 versus Type 2, effective-dated rows, and the enormous amount of DAX you avoid by modelling it correctly."},
+   {t:"Clinic 7 — Disconnected and parameter tables", d:"What-if scenarios, currency selection and dynamic banding. When a table with no relationship at all is the right answer."},
+   {t:"The rule of thumb", d:"If a measure needs more than one CALCULATE modifier just to undo the model, the model is wrong. Write it on the whiteboard and leave it there all week."},
+   {t:"Selling a model change to the business", d:"How to explain a two-day remodel to a sponsor who 'just wants the number by Friday'."}
+  ],
+  code:[
+  {lang:"DAX", label:"Clinic 1 — before (no product dimension)",
+   src:"Red Sales :=\nCALCULATE (\n    SUM ( Sales[SalesAmount] ),\n    FILTER ( ALL ( Sales ), Sales[ProductColour] = \"Red\" )\n)\n-- scans the whole fact table, ignores other slicers, and\n-- every new attribute needs another variant of this measure"},
+  {lang:"DAX", label:"Clinic 1 — after (Product dimension added)",
+   src:"Sales Amount := SUM ( Sales[SalesAmount] )\n-- colour, brand, category and subcategory now all come\n-- free from the dimension, through one relationship"},
+  {lang:"DAX", label:"Clinic 2 — before (Budget at month grain, Sales at day grain)",
+   src:"Budget Amt :=\nCALCULATE (\n    SUM ( Budget[Amount] ),\n    TREATAS ( VALUES ( 'Date'[YearMonth] ), Budget[YearMonth] ),\n    TREATAS ( VALUES ( Product[Category] ), Budget[Category] )\n)"},
+  {lang:"DAX", label:"Clinic 2 — after (Budget joined to a Month dimension and Product)",
+   src:"Budget Amt := SUM ( Budget[Amount] )\nVariance   := [Sales Amount] - [Budget Amt]\nVariance % := DIVIDE ( [Variance], [Budget Amt] )"}],
+  lab:{title:"Refactor two clinics yourself", steps:[
+   "Pick two clinics that match something in your own work.",
+   "Write the 'before' measure and record its query time in Performance Analyzer.",
+   "Change the model.",
+   "Write the 'after' measure and record the new query time. Report both numbers to the room."]},
+  traps:[
+   "Adding a bidirectional relationship to make one visual work, and breaking four others silently.",
+   "Solving a grain mismatch in DAX and leaving a landmine for whoever maintains it.",
+   "Calculated columns that exist only because a relationship is missing."],
+  links:[
+   {t:"Many-to-many guidance", u:"https://learn.microsoft.com/en-us/power-bi/guidance/relationships-many-to-many"},
+   {t:"SQLBI — modelling articles", u:"https://www.sqlbi.com/topics/data-modeling/"},
+   {t:"DAX Patterns", u:"https://www.daxpatterns.com/"}]
+ },
+ {
+  title:"Advanced model features",
+  goal:"The model-layer features that remove hundreds of lines of duplicated DAX.",
+  topics:[
+   {t:"Calculation groups in Power BI Desktop", d:"Created natively in Model view or TMDL view. Calculation items, SELECTEDMEASURE, ordinal, and calculation group precedence when you have more than one."},
+   {t:"Dynamic format strings", d:"Format string expressions on measures and on calculation items — currency switching, percentage versus absolute, and unit scaling."},
+   {t:"DAX user-defined functions", d:"Generally available since the June 2026 release. Write a calculation once, reuse it across measures and columns, document it with /// comments, and use type hints for safety.", pill:"new"},
+   {t:"UDF versus calculation group", d:"UDFs take parameters and carry no filter-context overhead; calculation items can be grouped and applied to any measure. Learn which problem each one solves."},
+   {t:"Field parameters", d:"Let the user choose the measure or the dimension from a slicer. Ordering, formatting, and combining them with calculation groups."},
+   {t:"Composite models and aggregation tables", d:"Manage aggregations, and verifying an aggregation hit or miss in Performance Analyzer. Automatic aggregations are Premium-only.", pill:"demo"},
+   {t:"Row-level security in the model", d:"Static roles, dynamic roles with USERPRINCIPALNAME, a security dimension table — and the RLS plus bidirectional relationship trap. Deployed on Day 5."},
+   {t:"Object-level security", d:"Hiding a table or column from a role entirely, via Tabular Editor, and what the restricted user's report looks like."},
+   {t:"Metadata that makes a model usable", d:"Display folders, descriptions, synonyms for Q&A, data categories, default summarisation, and hiding every key column."},
+   {t:"TMDL view", d:"Edit the model as script, copy a whole table between models, diff two versions — and document measures with /// comments.", pill:"new"},
+   {t:"INFO.VIEW functions", d:"Build a self-documenting data dictionary page straight from the model's own metadata."},
+   {t:"Best Practice Analyzer", d:"Install the standard rule set in Tabular Editor and run it against your model as a pre-publish gate."}
+  ],
+  code:[
+  {lang:"DAX", label:"A calculation group item (time intelligence)",
+   src:"-- Calculation group: 'Time Calculation'\n-- Item: YTD\nCALCULATE ( SELECTEDMEASURE (), DATESYTD ( 'Date'[Date] ) )\n\n-- Item: PY\nCALCULATE ( SELECTEDMEASURE (), SAMEPERIODLASTYEAR ( 'Date'[Date] ) )\n\n-- Item: YoY %\nVAR Cur = SELECTEDMEASURE ()\nVAR Pri = CALCULATE ( SELECTEDMEASURE (), SAMEPERIODLASTYEAR ( 'Date'[Date] ) )\nRETURN DIVIDE ( Cur - Pri, Pri )"},
+  {lang:"DAX", label:"A user-defined function",
+   src:"/// Safe percentage of a total, returning BLANK on a zero base.\n/// <param name=\"Part\">The numerator measure value.</param>\n/// <param name=\"Whole\">The denominator measure value.</param>\nFUNCTION SharePct = ( Part: NUMERIC, Whole: NUMERIC ) =>\n    IF ( Whole = 0, BLANK (), DIVIDE ( Part, Whole ) )"}],
+  lab:{title:"Give the star some power tools", steps:[
+   "Add a Time Calculation calculation group with YTD, PY, YoY and YoY % items.",
+   "Add a field parameter that switches between Sales, Margin and Quantity.",
+   "Write one UDF and use it in two measures.",
+   "Run Best Practice Analyzer and fix everything it flags as high priority."]},
+  links:[
+   {t:"Calculation groups", u:"https://learn.microsoft.com/en-us/analysis-services/tabular-models/calculation-groups"},
+   {t:"DAX user-defined functions", u:"https://learn.microsoft.com/en-us/dax/best-practices/dax-user-defined-functions"},
+   {t:"UDFs vs calculation groups (SQLBI)", u:"https://www.sqlbi.com/articles/dax-user-defined-functions-udf-vs-calculation-groups/"},
+   {t:"Field parameters", u:"https://learn.microsoft.com/en-us/power-bi/create-reports/power-bi-field-parameters"},
+   {t:"TMDL view", u:"https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-tmdl-view"},
+   {t:"Tabular Editor", u:"https://tabulareditor.com/"}]
+ }]
+},
+{
+ n:"Day 3", title:"DAX: evaluation context and patterns",
+ lede:"DAX stops being unpredictable the moment you can describe filter context and row context precisely. Today we lay that foundation, then spend the afternoon on time intelligence that survives a real fiscal calendar, and the pattern library you will reuse for years.",
+ outcome:"You can predict the number a measure will return before you press Enter, and explain why a total row disagrees with its own rows.",
+ blocks:[
+ {
+  title:"Re-laying the foundations, fast",
+  goal:"Level the room on the fundamentals that advanced users routinely get subtly wrong.",
+  topics:[
+   {t:"Calculated column, measure or calculated table", d:"The decision test: where is it stored, which context does it evaluate in, and when does it recompute."},
+   {t:"Implicit measures, and why to switch them off", d:"Discourage implicit measures, build explicit ones, and get formatting and business logic under your control."},
+   {t:"A measures table that scales", d:"A dedicated _Measures table, display folders, naming conventions, descriptions that appear in tooltips."},
+   {t:"Aggregators versus iterators", d:"SUM, COUNT, MIN, MAX against SUMX, AVERAGEX, MAXX, RANKX — and what SUM actually compiles into."},
+   {t:"Division, blanks and counting", d:"DIVIDE versus the slash operator; blank versus zero; COUNT, COUNTA, COUNTROWS and DISTINCTCOUNT and when each is the right one."},
+   {t:"VAR and RETURN", d:"Variables are immutable constants, evaluated once in the context where they are declared — which is exactly why they fix so many bugs."},
+   {t:"Data lineage in one slide", d:"Why a column value carried inside a variable still filters correctly, and the cases where lineage is lost."},
+   {t:"Measure branching", d:"Build measures on measures so a change to the base rule propagates everywhere instead of nowhere."},
+   {t:"Formatting as a first-class concern", d:"Format strings, dynamic format strings, currency and percentage handling, and units that do not mislead."},
+   {t:"Readable DAX is fast DAX", d:"DAX Formatter conventions, indentation, comments — and the direct link between readability and the bugs you never ship."}
+  ],
+  lab:{title:"From implicit to explicit", steps:[
+   "Find every implicit measure in the supplied report and replace it with an explicit one.",
+   "Move them into a _Measures table with display folders.",
+   "Add a description to each and confirm it appears on hover in the field list.",
+   "Run every formula through DAX Formatter and commit the formatted version."]},
+  links:[
+   {t:"DAX Guide", u:"https://dax.guide/"},
+   {t:"DAX Formatter", u:"https://www.daxformatter.com/"},
+   {t:"Learn DAX basics", u:"https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-quickstart-learn-dax-basics"}]
+ },
+ {
+  title:"Evaluation context — the heart of it",
+  goal:"The single most important session of the week. Everything else in DAX is a consequence of this.",
+  topics:[
+   {t:"Filter context, defined precisely", d:"The set of filters active when an expression evaluates, and every place one can come from: visual, slicer, page filter, report filter, RLS, CALCULATE."},
+   {t:"Row context, defined precisely", d:"What iterators and calculated columns create — and the crucial fact that a row context does not filter anything."},
+   {t:"Context transition", d:"CALCULATE converts the current row context into an equivalent filter context. This one sentence explains most DAX surprises."},
+   {t:"The SUMX surprise", d:"Why SUMX(Sales, [Margin]) behaves completely differently from SUMX(Sales, Sales[Qty] * Sales[Price]), and when you want each."},
+   {t:"CALCULATE anatomy", d:"Filter arguments are tables; predicate syntax is sugar for FILTER(ALL(column)); filter arguments are evaluated in the outer context, before the filters are applied."},
+   {t:"KEEPFILTERS", d:"Intersect with the existing filter instead of overwriting it — the fix for half the 'my slicer is ignored' bugs."},
+   {t:"The filter removers", d:"ALL, ALLEXCEPT, ALLNOBLANKROW, REMOVEFILTERS and ALLSELECTED — including what ALLSELECTED really does with the shadow filter context."},
+   {t:"CALCULATE modifiers", d:"USERELATIONSHIP, CROSSFILTER and TREATAS applied deliberately and locally, rather than baked into the model."},
+   {t:"Reading the current selection", d:"VALUES, DISTINCT, SELECTEDVALUE, HASONEVALUE, and ISINSCOPE for hierarchy-aware totals."},
+   {t:"Expanded tables", d:"The correct mental model for why filtering a dimension filters the fact table, and why the reverse needs help."},
+   {t:"Nested row contexts and EARLIER", d:"How they arise, and why VAR has made EARLIER something you only need to be able to read."},
+   {t:"Table functions as building blocks", d:"FILTER, SUMMARIZECOLUMNS with ADDCOLUMNS, CROSSJOIN, GENERATE, UNION, EXCEPT, INTERSECT, NATURALLEFTOUTERJOIN."},
+   {t:"A five-step method for predicting the result", d:"Say out loud: what is the filter context, does a row context exist, does a transition happen, what does the filter argument evaluate to, what is left."}
+  ],
+  code:[{lang:"DAX", label:"Context transition, in one example",
+   src:"-- Without CALCULATE: row context only, no filtering.\nTotal A := SUMX ( Customers, [Sales Amount] )\n-- [Sales Amount] is a measure, so there is an IMPLICIT CALCULATE:\n-- each customer row transitions to a filter context. Result: correct.\n\nTotal B := SUMX ( Customers, SUM ( Sales[SalesAmount] ) )\n-- no context transition: SUM sees the OUTER filter context every time,\n-- so this returns the grand total multiplied by the customer count."}],
+  lab:{title:"Predict the number", steps:[
+   "Ten short measures are shown on screen. Write down what each returns before running it.",
+   "Run them in DAX query view with EVALUATE and compare.",
+   "For every one you got wrong, write the one sentence that explains it.",
+   "Swap sheets with your pair and explain each other's mistakes."]},
+  traps:[
+   "Assuming a filter argument sees the filters that CALCULATE is about to apply. It does not.",
+   "Using ALL where you meant REMOVEFILTERS on a single column.",
+   "Writing ALLSELECTED without being able to say what it will do in a matrix total."],
+  links:[
+   {t:"CALCULATE reference", u:"https://dax.guide/calculate/"},
+   {t:"SQLBI — context transition", u:"https://www.sqlbi.com/articles/understanding-context-transition/"},
+   {t:"The Definitive Guide to DAX", u:"https://www.sqlbi.com/books/the-definitive-guide-to-dax-3rd-edition/"}]
+ },
+ {
+  title:"Time intelligence that survives a real calendar",
+  goal:"Built-in time intelligence for standard calendars, and hand-built patterns for everything else.",
+  topics:[
+   {t:"How built-in time intelligence works", d:"It replaces the filter on the date table with a different set of dates. Once you see that, the function list becomes obvious."},
+   {t:"The three requirements", d:"A dedicated date table, contiguous dates covering whole years, and Mark as Date Table. Miss one and the functions lie to you."},
+   {t:"The standard toolkit", d:"DATESYTD, DATESQTD, DATESMTD, TOTALYTD, SAMEPERIODLASTYEAR, DATEADD, DATESINPERIOD, PARALLELPERIOD, PREVIOUSMONTH, FIRSTDATE, LASTDATE, ENDOFMONTH."},
+   {t:"Fiscal years", d:"The year-end-date argument, fiscal period columns, and the exact point where built-in functions stop being enough."},
+   {t:"Non-standard calendars", d:"4-4-5, thirteen periods, ISO weeks. Built-in functions cannot do these — the period-key column pattern can."},
+   {t:"Comparing incomplete periods honestly", d:"Year to date against the same number of days last year, so today's partial month does not look like a collapse."},
+   {t:"Rolling and moving calculations", d:"Moving averages and rolling twelve months with DATESINPERIOD, and rolling windows on a week-based calendar."},
+   {t:"Cumulative totals", d:"Running totals, and the 'do not draw the future' pattern that blanks the line after the last date with data."},
+   {t:"Semi-additive measures", d:"Opening and closing balances, inventory on hand, headcount — LASTNONBLANKVALUE and friends."},
+   {t:"Growth measures", d:"YoY, YoY percent, variance to budget, CAGR, and the blank-handling that stops a division by an empty prior year."},
+   {t:"Time intelligence on a role-playing date", d:"Combining USERELATIONSHIP with a time intelligence function without breaking either."},
+   {t:"Packaging it as a calculation group", d:"Write the six patterns once, apply them to every measure in the model, and delete two hundred duplicate measures."}
+  ],
+  code:[{lang:"DAX", label:"Period-to-date on a custom (4-4-5) calendar",
+   src:"Sales 445 YTD :=\nVAR LastDay   = MAX ( 'Date'[Date] )\nVAR CurYear   = CALCULATE ( MAX ( 'Date'[FiscalYear] ), 'Date'[Date] = LastDay )\nVAR PeriodSet =\n    FILTER (\n        ALL ( 'Date' ),\n        'Date'[FiscalYear] = CurYear && 'Date'[Date] <= LastDay\n    )\nRETURN\n    CALCULATE ( [Sales Amount], PeriodSet )"}],
+  lab:{title:"Fiscal calendar, six measures, one calculation group", steps:[
+   "Build a date table with fiscal year, fiscal quarter, 4-4-5 period and ISO week columns.",
+   "Write YTD, PY, YoY, YoY %, rolling 12 and a closing balance as six separate measures.",
+   "Verify each against a hand-calculated number for one product and one month.",
+   "Now collapse all six into a single calculation group and delete the standalone measures."]},
+  traps:[
+   "Using the fact table's own date column as the axis instead of the date dimension.",
+   "A date table that stops in the middle of the current year.",
+   "Applying SAMEPERIODLASTYEAR to a 4-4-5 calendar and shipping the result."],
+  links:[
+   {t:"Time intelligence functions", u:"https://learn.microsoft.com/en-us/dax/time-intelligence-functions-dax"},
+   {t:"DAX Patterns — time intelligence", u:"https://www.daxpatterns.com/time-patterns/"},
+   {t:"Custom time-related calculations", u:"https://www.daxpatterns.com/custom-time-related-calculations/"}]
+ },
+ {
+  title:"Advanced DAX patterns",
+  goal:"The dozen patterns that cover most 'can Power BI do this?' questions.",
+  topics:[
+   {t:"Ranking", d:"RANKX with dense and skip ties, the newer RANK and ROWNUMBER with ORDERBY and PARTITIONBY, and TOPN for a filtered set."},
+   {t:"Window functions", d:"WINDOW, OFFSET and INDEX — period-over-period and moving calculations without touching time intelligence."},
+   {t:"Dynamic segmentation and banding", d:"A disconnected band table plus a measure that classifies at query time, so the bands can change without a refresh."},
+   {t:"ABC and Pareto analysis", d:"Cumulative share, class assignment and the visual that makes it land."},
+   {t:"Customer lifecycle", d:"New, returning, lost and recovered customers, with a clear definition of the window."},
+   {t:"Basket analysis", d:"Products bought together, with INTERSECT and CROSSJOIN, and how to keep it from exploding."},
+   {t:"Budget allocation", d:"Spreading a coarse-grain number down to a fine grain by weight, and the check that the totals still reconcile."},
+   {t:"What-if parameters", d:"Numeric range parameters driving a scenario measure, and the difference between a parameter and a slicer."},
+   {t:"Dynamic titles and labels", d:"Measures that generate the title, subtitle and axis label so the page always describes what it is showing."},
+   {t:"Fixing wrong totals", d:"The total row is a different filter context. The SUMX-over-grain fix, and the ISINSCOPE / HASONEVALUE guards."},
+   {t:"Virtual relationships with TREATAS", d:"Filtering across tables with no relationship, and when that beats adding one."},
+   {t:"Visual calculations", d:"Running sum, percent of parent and moving average defined inside the visual itself. Generally available in 2026 — learn the limits versus a model measure.", pill:"new"}
+  ],
+  code:[{lang:"DAX", label:"Window function instead of a time-intelligence workaround",
+   src:"Sales MoM % :=\nVAR Cur  = [Sales Amount]\nVAR Prev =\n    CALCULATE (\n        [Sales Amount],\n        OFFSET ( -1, , ORDERBY ( 'Date'[Year Month], ASC ) )\n    )\nRETURN\n    DIVIDE ( Cur - Prev, Prev )"},
+  {lang:"DAX", label:"A total that stops being wrong",
+   src:"Weighted Price :=\nVAR ByProduct =\n    ADDCOLUMNS (\n        VALUES ( Product[ProductKey] ),\n        \"@Amt\", [Sales Amount],\n        \"@Qty\", [Quantity]\n    )\nRETURN\n    DIVIDE ( SUMX ( ByProduct, [@Amt] ), SUMX ( ByProduct, [@Qty] ) )"}],
+  lab:{title:"Six pattern challenges", steps:[
+   "Rank products within category, with ties handled the way finance expects.",
+   "Classify customers into A / B / C by cumulative revenue share.",
+   "Count new versus returning customers per month.",
+   "Build a what-if discount scenario and show margin impact.",
+   "Fix a matrix whose total row is visibly wrong.",
+   "Rebuild one of the above as a visual calculation and compare."]},
+  links:[
+   {t:"DAX Patterns (full library)", u:"https://www.daxpatterns.com/patterns/"},
+   {t:"Window functions in DAX", u:"https://learn.microsoft.com/en-us/dax/window-functions-dax"},
+   {t:"Visual calculations", u:"https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-visual-calculations-overview"}]
+ }]
+},
+{
+ n:"Day 4", title:"Making it fast, then making it beautiful",
+ lede:"Morning: how DAX actually executes, and a clinic where everyone halves the query time of a measure and proves it. Afternoon: the report craft that turns a correct model into something people choose to use.",
+ outcome:"You can point at a slow visual, name the engine that is struggling, fix it, and then redesign the page it lives on.",
+ blocks:[
+ {
+  title:"How DAX actually executes",
+  goal:"Replace guessing with query plans and server timings.",
+  topics:[
+   {t:"Formula engine versus storage engine", d:"One is single-threaded, has no cache and can do anything. The other is multi-threaded, cached, and can only do simple things very fast. Your job is to keep work in the second one."},
+   {t:"Query plans", d:"Logical and physical plans, and how to read them in DAX Studio without needing to understand every line."},
+   {t:"xmSQL", d:"The storage engine's own language. Reading a VertiPaq scan and spotting the one that returns a million rows."},
+   {t:"CallbackDataID", d:"The storage engine calling back into the formula engine row by row. What causes it, and why it destroys performance."},
+   {t:"Materialisation", d:"Large intermediate tables built in memory, and how Server Timings exposes them."},
+   {t:"DAX Studio in anger", d:"Server Timings, Query Plan, Clear Cache, Run Benchmark, and exporting a VPAX file to share a model's statistics without the data."},
+   {t:"Performance Analyzer in Desktop", d:"DAX query, visual display and 'other' — and what 'other' almost always turns out to be."},
+   {t:"DAX query view", d:"EVALUATE, DEFINE MEASURE, quick queries and 'Define with references and evaluate'. Test a measure before it ever touches a visual.", pill:"new"},
+   {t:"Measuring honestly", d:"Cold cache versus warm cache, five runs not one, one visual at a time, and recording the number before you change anything."},
+   {t:"Setting a performance budget", d:"A visual under one second, a page under five. Agree the target before you start optimising."}
+  ],
+  lab:{title:"Find the bottleneck", steps:[
+   "Capture a deliberately slow page with Performance Analyzer.",
+   "Copy the slowest visual's query into DAX Studio.",
+   "Run it with Server Timings and Query Plan on, over a cold cache.",
+   "Classify the problem: storage engine scan, formula engine iteration, callback, or materialisation."]},
+  links:[
+   {t:"Optimization guide for Power BI", u:"https://learn.microsoft.com/en-us/power-bi/guidance/power-bi-optimization"},
+   {t:"Formula engine and storage engine", u:"https://www.sqlbi.com/articles/formula-engine-and-storage-engine-in-dax/"},
+   {t:"Performance Analyzer", u:"https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-performance-analyzer"},
+   {t:"DAX query view", u:"https://learn.microsoft.com/en-us/power-bi/transform-model/dax-query-view"}]
+ },
+ {
+  title:"The DAX optimisation clinic",
+  goal:"Hands-on rewriting. Everyone leaves with measured before-and-after numbers.",
+  topics:[
+   {t:"FILTER over a table versus a column predicate", d:"Why FILTER(Sales, ...) is usually the wrong shape, what to write instead, and the narrow cases where FILTER is unavoidable."},
+   {t:"Nested iterators", d:"Row contexts multiply. Spot the nesting, and flatten it with a pre-aggregated table variable."},
+   {t:"IF inside an iterator", d:"The classic CallbackDataID generator. Rewrite with boolean arithmetic, a filtered scan, or a different grain."},
+   {t:"DISTINCTCOUNT on high cardinality", d:"Why it is expensive, and the alternatives: a pre-aggregated column, a different grain, or accepting an approximation."},
+   {t:"Variables to stop recomputation", d:"Hoist invariant sub-expressions out of iterators; compute once, reuse three times."},
+   {t:"Filter removers and their cost", d:"ALLEXCEPT versus REMOVEFILTERS plus VALUES, and the hidden expense of ALLSELECTED in a large matrix."},
+   {t:"IN and TREATAS versus long OR chains", d:"Set-based filtering beats a chain of comparisons, in readability and in milliseconds."},
+   {t:"Bidirectional filters and RLS as query-time cost", d:"Both are evaluated on every query. Measure what your security model costs before you blame DAX."},
+   {t:"Calculated columns on large fact tables", d:"Why they belong in Power Query or the source, and the refresh-time cost you are hiding."},
+   {t:"Strings and error handling", d:"Text operations and IFERROR inside iterators, and the cheaper shapes that do the same job."},
+   {t:"Report-side causes of slow DAX", d:"Too many visuals per page, high-cardinality tables and matrices, select-all slicers, unnecessary cross-highlighting, and the overhead of field parameters and calculation groups."},
+   {t:"Query reduction settings", d:"Apply-all-slicers button, disabling cross-highlighting, and reducing the number of queries a page fires on load."},
+   {t:"When the answer is not DAX at all", d:"Aggregation tables, a coarser grain, a better model, incremental refresh, or simply fewer visuals."}
+  ],
+  code:[{lang:"DAX", label:"Before and after",
+   src:"-- Before: iterates the whole fact table in the formula engine\nBig Sales :=\nCALCULATE (\n    [Sales Amount],\n    FILTER ( Sales, Sales[SalesAmount] > 1000 )\n)\n\n-- After: a column predicate the storage engine can push down\nBig Sales :=\nCALCULATE (\n    [Sales Amount],\n    KEEPFILTERS ( Sales[SalesAmount] > 1000 )\n)"}],
+  lab:{title:"Halve it, and prove it", steps:[
+   "You are given five slow measures and their current Server Timings numbers.",
+   "Rewrite each one. You may change the measure, the model, or both.",
+   "Re-measure over a cold cache, five runs.",
+   "Report total duration, storage engine CPU and callback count, before and after."]},
+  traps:[
+   "Optimising a measure that was never the bottleneck.",
+   "Reporting a warm-cache number as if it were a fix.",
+   "Adding an aggregation table to rescue a model that simply has the wrong grain."],
+  links:[
+   {t:"DAX optimization articles (SQLBI)", u:"https://www.sqlbi.com/topics/optimization/"},
+   {t:"Optimizing DAX (course)", u:"https://www.sqlbi.com/training/optimizing-dax-video-course/"},
+   {t:"Reduce report load times", u:"https://learn.microsoft.com/en-us/power-bi/guidance/power-bi-optimization"}]
+ },
+ {
+  title:"Report design craft",
+  goal:"Design decisions with reasons behind them, not taste. Everyone rebuilds one page and defends it.",
+  topics:[
+   {t:"Report versus dashboard", d:"Two different artifacts in the Power BI Service with different jobs. Get the vocabulary right today; you will build both tomorrow."},
+   {t:"Audience-first design", d:"The five-second test, the inverted-pyramid page, and the discipline of one question per page."},
+   {t:"Layout mechanics", d:"Canvas size, grid and snap, alignment and distribution, z-order, grouping, and the Selection pane as a layout tool."},
+   {t:"Themes", d:"The Fluent 2 base theme and the Theme pane; Customize current theme and modern visual defaults for report-wide settings; and theme JSON when you need a corporate standard under version control.", pill:"new"},
+   {t:"Choosing the visual", d:"A decision tree from the question being asked — plus the four chart types that are almost always the wrong answer."},
+   {t:"The visual catalogue worth knowing", d:"Card and the new card visual, KPI, small multiples, combo charts, scatter with play axis, ribbon, decomposition tree, gauge alternatives."},
+   {t:"Matrix mastery", d:"Layouts and stepped layout, subtotals, expand and collapse icons, conditional formatting on values and on rows, and the 2026 additions to matrix and slicer formatting.", pill:"new"},
+   {t:"Conditional formatting driven by measures", d:"Background, font colour, data bars, icons and web URLs, all computed in DAX so the rules live in one place."},
+   {t:"Dynamic titles, subtitles and labels", d:"Measure-driven text so the page always describes exactly what is filtered."},
+   {t:"Sorting and Top N", d:"Custom sort orders, Top N filters, and building an honest 'Other' bucket rather than silently dropping rows."},
+   {t:"Accessibility", d:"Contrast ratios, colour-blind-safe palettes, alt text, tab order, and keyboard navigation — checked, not assumed."},
+   {t:"Mobile layout", d:"Building the phone view deliberately instead of letting Power BI guess."}
+  ],
+  lab:{title:"Rebuild the ugly page", steps:[
+   "You are given a working but badly designed page and a one-paragraph brief naming the audience and the decision they need to make.",
+   "Rebuild it. You may not add data, only redesign.",
+   "Apply a custom theme and check contrast and tab order.",
+   "Five-minute peer critique in pairs against the brief."]},
+  links:[
+   {t:"Report design guidance", u:"https://learn.microsoft.com/en-us/power-bi/guidance/report-design-overview"},
+   {t:"Report themes", u:"https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-report-themes"},
+   {t:"Accessibility checklist", u:"https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-accessibility-creating-reports"},
+   {t:"Power BI monthly feature blog", u:"https://powerbi.microsoft.com/en-us/blog/"}]
+ },
+ {
+  title:"Dynamic, interactive dashboards",
+  goal:"Every interaction feature in one session, then assemble them into a single cockpit page.",
+  topics:[
+   {t:"Slicers in depth", d:"Button slicer, list and dropdown, hierarchy slicer, search, single select, Select all, and the formatting options added through 2026.", pill:"new"},
+   {t:"Sync slicers", d:"Syncing across pages, sync groups, and visible-versus-synced as two separate switches."},
+   {t:"Edit interactions", d:"Filter, highlight or none. Draw the interaction map for a page before you build it."},
+   {t:"The filter pane", d:"Hiding, locking, formatting and theming filter cards; visual, page and report level filters; and what a Viewer can change."},
+   {t:"Drill down and drill through", d:"Drill down, drill up, expand to next level; drill-through pages with Keep all filters; and cross-report drill through."},
+   {t:"Tooltips", d:"Default tooltips, report-page tooltips, per-visual tooltip pages, and using a tooltip to carry a small report."},
+   {t:"Bookmarks", d:"Report versus personal bookmarks; data, display and current page options; selected visuals only; and the Selection pane discipline that keeps them maintainable."},
+   {t:"Buttons and actions", d:"Page navigation, navigator visuals, bookmark toggles, show and hide panels, and a reset-filters button users actually find."},
+   {t:"Field parameters as a control", d:"Let the user pick the measure and the dimension; combine with a calculation group for the time comparison."},
+   {t:"Q&A and Smart narrative", d:"The Q&A visual, synonyms and the linguistic schema; Smart narrative for an auto-written summary you then edit."},
+   {t:"Analytics features", d:"Key influencers, decomposition tree, anomaly detection, forecasting, reference and trend lines, and dynamic reference lines driven by a measure."},
+   {t:"Self-service inside your report", d:"Personalize visuals and the exploration experience, so power users stop asking you for one more chart."}
+  ],
+  lab:{title:"Build the executive cockpit", steps:[
+   "One page, on Contoso, with a field parameter measure switcher.",
+   "A bookmark toggle that swaps a chart for a detail table.",
+   "A drill-through page for a single product.",
+   "A report-page tooltip on the main chart.",
+   "Check it works with keyboard navigation only."]},
+  links:[
+   {t:"Bookmarks", u:"https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-bookmarks"},
+   {t:"Drill through", u:"https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-drillthrough"},
+   {t:"Report tooltip pages", u:"https://learn.microsoft.com/en-us/power-bi/create-reports/desktop-tooltips"},
+   {t:"Q&A in Power BI", u:"https://learn.microsoft.com/en-us/power-bi/natural-language/q-and-a-intro"}]
+ }]
+},
+{
+ n:"Day 5", title:"Ship it: publish, secure, govern, present",
+ lede:"A .pbix on your laptop is not a solution. Today it becomes a published, secured, refreshing, documented product — and then teams build and present a capstone on everything from the week.",
+ outcome:"You can take a model from Desktop to a governed Pro workspace with row-level security, scheduled refresh and an app, and you know what to do when it breaks at 7am.",
+ blocks:[
+ {
+  title:"Report engineering, reuse and version control",
+  goal:"The engineering practices that separate a one-off file from a maintained product.",
+  topics:[
+   {t:"Templates (.pbit)", d:"Parameters, theme, date table and standard measures as a starting kit every new report inherits."},
+   {t:"Themes as source-controlled JSON", d:"A corporate palette, type styles and visual defaults that live in a repository, not in one person's Downloads folder."},
+   {t:"Power BI Project files (PBIP) and TMDL", d:"A .pbix you can diff, branch and review. The single biggest change to how Power BI teams work.", pill:"new"},
+   {t:"External tools", d:"Tabular Editor 2 (free), DAX Studio, ALM Toolkit and Bravo — how they attach to Desktop and what each is for."},
+   {t:"Best Practice Analyzer as a gate", d:"Run it before every publish; agree as a team which rules are mandatory and which are advisory."},
+   {t:"Splitting the model from the reports", d:"One shared semantic model, many thin reports live-connected to it. The pattern that stops six copies of the truth."},
+   {t:"Reducing report load", d:"Visual count per page, query reduction settings, image sizes, and an honest audit of your custom visuals."},
+   {t:"Custom visuals and governance", d:"AppSource versus certified versus private; the tenant setting your admin controls; and the supportability question to ask before you use one."},
+   {t:"Analyze in Excel", d:"Giving the Excel-native audience a pivot table over your model instead of a data export."},
+   {t:"Paginated reports", d:"Power BI Report Builder for pixel-perfect, printable, long-table output. Publishing requires Premium or PPU, so this is a demonstration.", pill:"demo"}
+  ],
+  lab:{title:"Turn your file into a project", steps:[
+   "Save your model as a PBIP project and look at the TMDL files it produces.",
+   "Run Best Practice Analyzer and fix every high-priority finding.",
+   "Save a .pbit template with your parameters and date table.",
+   "Publish the semantic model and build one thin report live-connected to it."]},
+  links:[
+   {t:"Power BI Desktop projects (PBIP)", u:"https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-overview"},
+   {t:"External tools", u:"https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-external-tools"},
+   {t:"ALM Toolkit", u:"https://alm-toolkit.com/"},
+   {t:"Power BI Report Builder", u:"https://learn.microsoft.com/en-us/power-bi/paginated-reports/paginated-reports-report-builder-power-bi"}]
+ },
+ {
+  title:"Publishing and the Power BI Service on a Pro licence",
+  goal:"Everything a Pro licence can actually do, done hands-on, including the dashboard features that only exist in the Service.",
+  topics:[
+   {t:"Workspaces and roles", d:"Admin, Member, Contributor and Viewer — a precise table of who can do what, and the mistake of making everyone a Member."},
+   {t:"Publishing mechanics", d:"Semantic model and report as separate items, taking over a model, and rebinding a report to a different model."},
+   {t:"Shared semantic models", d:"Live connect from Desktop, Build permission, endorsement as Promoted or Certified, lineage view and impact analysis."},
+   {t:"Dashboards in the Service", d:"Pinning tiles from reports, pinning a live page, Q&A tiles, and image, text, video and web content tiles."},
+   {t:"What only a dashboard can do", d:"Data alerts, a mobile-specific dashboard layout, and tiles drawn from several different reports and models on one canvas."},
+   {t:"Report or dashboard: choosing", d:"A decision guide you can give a client, with the three cases where a dashboard genuinely beats a report page."},
+   {t:"Apps, org apps and audiences", d:"Building an app, defining multiple audiences with different content, navigation, and the 2026 audience improvements.", pill:"new"},
+   {t:"Sharing and permissions", d:"Share links versus direct access, Allow recipients to share, Build permission, and exactly what a Viewer sees."},
+   {t:"Subscriptions and export", d:"Email subscriptions, export to PDF, PowerPoint and Excel, and the tenant settings that govern data export."},
+   {t:"Scheduled refresh on Pro", d:"Eight refreshes a day, refresh history, failure notifications, and the granular refresh controls added in 2026.", pill:"new"},
+   {t:"Gateways", d:"Personal versus standard data gateway, data source credentials, privacy levels in the Service, and cloud connections."},
+   {t:"Incremental refresh, switched on", d:"Publishing the policy built on Day 1, watching the first long refresh, and confirming the partitions."},
+   {t:"Usage metrics", d:"Who is actually opening your report, and the conversation that follows when the answer is nobody."}
+  ],
+  lab:{title:"Publish, package, schedule, alert", steps:[
+   "Publish your model and report to a Pro workspace.",
+   "Build a dashboard by pinning four tiles from two different reports.",
+   "Set a data alert on a KPI tile.",
+   "Build an app with two audiences: an executive audience and an analyst audience.",
+   "Configure scheduled refresh and a failure notification."]},
+  links:[
+   {t:"Workspace roles", u:"https://learn.microsoft.com/en-us/power-bi/collaborate-share/service-roles-new-workspaces"},
+   {t:"Dashboards vs reports", u:"https://learn.microsoft.com/en-us/power-bi/consumer/end-user-dashboards"},
+   {t:"Power BI apps and audiences", u:"https://learn.microsoft.com/en-us/power-bi/collaborate-share/service-create-distribute-apps"},
+   {t:"Data refresh", u:"https://learn.microsoft.com/en-us/power-bi/connect-data/refresh-data"},
+   {t:"On-premises data gateway", u:"https://learn.microsoft.com/en-us/data-integration/gateway/service-gateway-onprem"}]
+ },
+ {
+  title:"Security, governance and lifecycle",
+  goal:"The part that gets skipped in most training and causes most incidents.",
+  topics:[
+   {t:"Row-level security end to end", d:"Define roles in Desktop, test with View as, assign members in the Service, and understand why a workspace Member bypasses RLS."},
+   {t:"Dynamic RLS", d:"USERPRINCIPALNAME against a user-mapping table, and manager hierarchies with PATH and PATHCONTAINS."},
+   {t:"The RLS traps", d:"Bidirectional relationships, many-to-many, and the two ways a carefully built security model quietly leaks."},
+   {t:"The performance cost of RLS", d:"Security filters are applied on every query. Measure the cost, then decide."},
+   {t:"Object-level security", d:"Hiding whole tables and columns from a role using Tabular Editor, and testing what the restricted user's report looks like."},
+   {t:"Sensitivity labels", d:"Information protection, inherited labels, and export controls."},
+   {t:"Tenant settings a developer must know", d:"Publish-to-web, export, custom visuals, sharing with external users — and how to ask your admin the right question."},
+   {t:"Lifecycle on a Pro licence", d:"Dev, test and production workspaces managed by hand, parameters for source switching, and ALM Toolkit for a schema diff. Deployment pipelines need Premium or PPU.", pill:"demo"},
+   {t:"Documentation that stays current", d:"TMDL scripts in the repository, INFO.VIEW functions for a live data dictionary page, and /// descriptions on every measure."},
+   {t:"Conventions that survive staff turnover", d:"Naming, display folders, workspace structure, and a README that tells the next person where to start."},
+   {t:"A reusable go-live checklist", d:"Twenty items covering model, DAX, report, security, refresh and documentation. Yours to take away."}
+  ],
+  code:[{lang:"DAX", label:"Dynamic RLS with a user-mapping table",
+   src:"-- Role: 'Sales rep'\n-- Filter on the Security table:\n[UserPrincipalName] = USERPRINCIPALNAME ()\n\n-- Security ( UserPrincipalName, TerritoryKey ) filters Territory,\n-- which filters Sales through the normal one-to-many relationship.\n-- No bidirectional filtering anywhere."}],
+  lab:{title:"Secure it and prove it", steps:[
+   "Build a Security table mapping three test users to three territories.",
+   "Create a dynamic RLS role and test all three with View as.",
+   "Publish, assign the role, and verify in the Service with a second account or the test-as-role feature.",
+   "Measure a report page with and without RLS and note the difference."]},
+  links:[
+   {t:"Row-level security", u:"https://learn.microsoft.com/en-us/power-bi/enterprise/service-admin-rls"},
+   {t:"RLS guidance", u:"https://learn.microsoft.com/en-us/power-bi/guidance/rls-guidance"},
+   {t:"Object-level security", u:"https://learn.microsoft.com/en-us/power-bi/enterprise/service-admin-ols"},
+   {t:"Sensitivity labels", u:"https://learn.microsoft.com/en-us/power-bi/enterprise/service-security-sensitivity-label-overview"}]
+ },
+ {
+  title:"Capstone, troubleshooting clinic and next steps",
+  goal:"Put the whole week together, then send everyone away with a plan.",
+  topics:[
+   {t:"Capstone brief", d:"Teams of two or three, sixty minutes of build. Contoso executive solution: a clean star schema, eight measures including time intelligence, one calculation group or UDF, one field parameter, a drill-through page, an RLS role, published as an app."},
+   {t:"Capstone rubric", d:"Scored on model correctness, DAX correctness, page performance under five seconds, design and accessibility, security, and documentation."},
+   {t:"Team presentations", d:"Five minutes each, followed by structured peer critique against the rubric."},
+   {t:"Troubleshooting clinic — refresh", d:"Refresh fails in the Service but works on the desktop; gateway credential errors; the Formula.Firewall error; a timeout on a large table."},
+   {t:"Troubleshooting clinic — numbers", d:"The total is wrong; the measure returns blank; the measure ignores the slicer; two visuals disagree; the number changes when you add a column."},
+   {t:"Troubleshooting clinic — model", d:"The relationship will not activate; ambiguous path; circular dependency; Sort by Column refuses; the blank row appeared."},
+   {t:"Troubleshooting clinic — performance and security", d:"Fast on the desktop, slow in the Service; RLS shows nothing at all; a Viewer sees data they should not."},
+   {t:"Your 30-60-90 day plan", d:"What to practise first, what to rebuild at work, and what to read. Written down before you leave the room."},
+   {t:"PL-300 and beyond", d:"Exam objectives mapped against this week, what this course covered in more depth than the exam, and what the exam covers that we deliberately did not."},
+   {t:"Staying current", d:"The monthly feature summary, the release plan, and three communities worth your time."},
+   {t:"Course feedback and open Q&A", d:"Bring the hardest problem from your own work. This is the slot for it."}
+  ],
+  links:[
+   {t:"PL-300 certification", u:"https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/"},
+   {t:"Power BI release plan", u:"https://learn.microsoft.com/en-us/power-platform/release-plan/"},
+   {t:"Fabric Community — Power BI forums", u:"https://community.fabric.microsoft.com/"},
+   {t:"What's new in Power BI", u:"https://learn.microsoft.com/en-us/power-bi/fundamentals/whats-new"}]
+ }]
+}];
+
+var SETUP = {
+ lede:"Five days, 33 hours 45 minutes of teaching time, twenty blocks. Built for a room where some people write DAX daily and some have only ever used the visualisation pane. Everything below is designed for Power BI Desktop plus a Power BI Pro licence, on Contoso and AdventureWorks sample data.",
+ map:[
+  {n:"Day 1", h:"Power Query and M", p:"Read and write M by hand, build reusable functions, and make queries fold back to the source."},
+  {n:"Day 2", h:"The model is the product", p:"VertiPaq internals, star schema mechanics, and seven clinics where a model change replaces a page of DAX."},
+  {n:"Day 3", h:"DAX and evaluation context", p:"Filter context, row context, context transition, real-calendar time intelligence and the pattern library."},
+  {n:"Day 4", h:"Fast, then beautiful", p:"Query plans and server timings in the morning; report design and interactive dashboards in the afternoon."},
+  {n:"Day 5", h:"Ship it", p:"PBIP and version control, the Service on Pro, row-level security, governance — and the capstone."}
+ ],
+ groups:[
+  {title:"Pre-course checklist — every participant, before Day 1",
+   items:[
+    {t:"Power BI Desktop installed and updated", d:"Latest monthly release from the Microsoft Store or the standalone installer. Everyone on the same version avoids an hour of confusion on Day 2."},
+    {t:"Power BI Pro licence assigned and Service sign-in tested", d:"Each participant needs a workspace they can publish to. Test the sign-in before the course, not on Day 5 morning."},
+    {t:"DAX Studio installed", d:"Free, from daxstudio.org. Required for Day 2 (VertiPaq Analyzer) and all of Day 4 morning."},
+    {t:"Tabular Editor 2 installed", d:"Free version is enough. Needed for Best Practice Analyzer and object-level security."},
+    {t:"Contoso sample data available locally", d:"Either the Contoso Data Generator output or the Contoso .pbix / SQL backup, placed at an identical path on every machine."},
+    {t:"AdventureWorks DW sample available", d:"Used for the snowflake-to-star lab on Day 2 and the RLS lab on Day 5."},
+    {t:"Starter .pbix checkpoints distributed", d:"One saved file per block, so anyone who falls behind can rejoin at the top of the next block instead of being stranded all day."},
+    {t:"Auto date/time switched off in Desktop options", d:"Global option, set once. Do it before Day 2 or the VertiPaq numbers will confuse everyone."},
+    {t:"Second monitor or large screen per participant", d:"Days 3 and 4 involve following along in two windows (Desktop and DAX Studio). One small laptop screen is genuinely limiting."},
+    {t:"Level-set diagnostic sent out or ready for Day 1 Block 1", d:"Ten questions, not graded, used only for pairing and for choosing stretch tasks."}
+   ]},
+  {title:"Running a mixed-ability room",
+   items:[
+    {t:"Pair a confident learner with a steadier one on Day 1", d:"Keep the pairs for the whole week. The explaining is where the confident one consolidates."},
+    {t:"Run a core lane and a fast lane for every lab", d:"Core steps are compulsory; each lab has two stretch steps for anyone who finishes early. Nobody waits, nobody is rushed."},
+    {t:"Open a parking lot board on the wall or in chat", d:"Off-topic and advanced questions go up there and get answered in the last block of the day. Protects the timetable without dismissing anyone."},
+    {t:"Reset to a checkpoint file at the start of every block", d:"The single most effective technique for keeping a mixed room together across five days."},
+    {t:"Ask the room to predict before every demo", d:"Thirty seconds of prediction turns a passive demo into a test. It also tells you instantly who is lost."},
+    {t:"Give the advanced participants a teaching slot", d:"Day 2 clinics and Day 3 patterns work well when a strong participant presents one. It raises the room and frees you to coach."},
+    {t:"End each day with a five-question recap quiz", d:"Anonymous, answered on cards or in chat. It tells you what to re-open at 09:30 tomorrow."}
+   ]},
+  {title:"Trainer kit",
+   items:[
+    {t:"Twenty checkpoint .pbix files prepared and named by block", d:"Day X Block Y Start. Tested on a clean machine."},
+    {t:"Deliberately broken files for Day 1 Block 4 and Day 4 Block 2", d:"A non-folding query and five slow measures, with the 'after' versions held back."},
+    {t:"Seven clinic files for Day 2 Block 3", d:"Each with a bad-model version and a fixed-model version, so the before-and-after is instant."},
+    {t:"Slow report for Day 4 Block 1", d:"Something that genuinely takes eight seconds, so Performance Analyzer has something to say."},
+    {t:"Ugly page for Day 4 Block 3", d:"Working data, poor design, plus the one-paragraph brief."},
+    {t:"Capstone brief, rubric and data pack printed", d:"Teams should not lose ten minutes reading a screen."},
+    {t:"Three test user accounts for the Day 5 RLS lab", d:"Pre-created in the tenant, with the mapping table already matching them."},
+    {t:"A printed go-live checklist per participant", d:"The takeaway that gets used after the course ends."}
+   ]}
+ ],
+ cards:[
+  {h:"What is deliberately out of scope", b:"Microsoft Fabric items (lakehouses, warehouses, Dataflow Gen2, notebooks, Direct Lake) are not covered — this is a Power BI course. Copilot is mentioned only where it appears in the Desktop interface. Premium and PPU-only features (deployment pipelines, XMLA write, automatic aggregations, paginated report publishing, large model storage) are demonstrated and explained, but not practised, because the classroom is Pro-licensed."},
+  {h:"Daily rhythm", b:"09:30 start, 17:30 finish. Four teaching blocks separated by a tea break, lunch and a second tea break. Blocks one to three are 1 hour 45 minutes; the final block is 1 hour 30, which is deliberate — energy drops after 16:00, so the last block is always the most hands-on one of the day."},
+  {h:"How each block is structured", b:"Roughly 40 percent explanation with live demonstration, 40 percent hands-on lab, 20 percent review and questions. Every block ends with a lab that produces something the next block builds on, so the week accumulates into one solution rather than twenty disconnected exercises."},
+  {h:"Assessment", b:"Three layers: a daily lab that must run before the next block starts; a five-question recap quiz at the end of each day; and the Day 5 capstone scored against a published rubric covering model, DAX, performance, design, security and documentation. Nobody is ranked — the rubric exists so participants can self-assess after the course."}
+ ]
+};
+
+var RESOURCES = [
+ {g:"Official documentation — start here", items:[
+  {t:"Power BI documentation", u:"https://learn.microsoft.com/en-us/power-bi/", d:"The authoritative reference for everything in this course."},
+  {t:"DAX function reference", u:"https://learn.microsoft.com/en-us/dax/dax-function-reference", d:"Every function, with parameters and remarks."},
+  {t:"Power Query M function reference", u:"https://learn.microsoft.com/en-us/powerquery-m/power-query-m-function-reference", d:"The M library, by category. Keep it open all of Day 1."},
+  {t:"Power BI guidance library", u:"https://learn.microsoft.com/en-us/power-bi/guidance/", d:"Microsoft's own best-practice articles on modelling, DAX and optimisation."},
+  {t:"Optimization guide for Power BI", u:"https://learn.microsoft.com/en-us/power-bi/guidance/power-bi-optimization", d:"The single most useful page for Day 4."},
+  {t:"What's new in Power BI", u:"https://learn.microsoft.com/en-us/power-bi/fundamentals/whats-new", d:"Monthly feature summaries. Read it the first working day of every month."}
+ ]},
+ {g:"DAX", items:[
+  {t:"DAX Guide (SQLBI)", u:"https://dax.guide/", d:"Better than the official reference for day-to-day lookups, with compatibility notes and examples."},
+  {t:"DAX Patterns", u:"https://www.daxpatterns.com/", d:"The canonical pattern library: time intelligence, ranking, segmentation, budgeting, basket analysis."},
+  {t:"The Definitive Guide to DAX, 3rd edition", u:"https://www.sqlbi.com/books/the-definitive-guide-to-dax-3rd-edition/", d:"Russo and Ferrari. The book to own. Chapters 4 to 6 are Day 3 of this course in long form."},
+  {t:"SQLBI articles and videos", u:"https://www.sqlbi.com/articles/", d:"Deep, correct, and updated. Search here before you search anywhere else."},
+  {t:"Optimizing DAX (video course)", u:"https://www.sqlbi.com/training/optimizing-dax-video-course/", d:"The natural follow-on from Day 4 morning."},
+  {t:"DAX Formatter", u:"https://www.daxformatter.com/", d:"Free. Paste, format, paste back. Use it on everything."},
+  {t:"DAX user-defined functions", u:"https://learn.microsoft.com/en-us/dax/best-practices/dax-user-defined-functions", d:"Generally available since June 2026 — the newest thing in the DAX language."}
+ ]},
+ {g:"Power Query and M", items:[
+  {t:"Power Query documentation", u:"https://learn.microsoft.com/en-us/power-query/", d:"Concepts, connectors, folding and diagnostics."},
+  {t:"M language specification", u:"https://learn.microsoft.com/en-us/powerquery-m/power-query-m-language-specification", d:"Dry, but it is the only place the semantics are stated exactly."},
+  {t:"Gorilla BI", u:"https://gorilla.bi/power-query/", d:"Rick de Groot. The best free writing on M as a language rather than as a UI."},
+  {t:"Chris Webb's BI Blog", u:"https://blog.crossjoin.co.uk/", d:"Twenty years of query folding, connectors and refresh internals."},
+  {t:"Master Your Data with Power Query", u:"https://powerquery.how/", d:"Puls and Escobar. The practical book for Day 1 content."},
+  {t:"Query folding guidance", u:"https://learn.microsoft.com/en-us/power-query/power-query-folding", d:"Read before Day 1 Block 4."}
+ ]},
+ {g:"Data modelling", items:[
+  {t:"Star schema and Power BI", u:"https://learn.microsoft.com/en-us/power-bi/guidance/star-schema", d:"Microsoft's own statement that star schema is the target design."},
+  {t:"RADACAD — modelling articles", u:"https://radacad.com/category/power-bi/data-modelling", d:"Reza Rad on relationships, role-playing dimensions and many-to-many."},
+  {t:"The Data Warehouse Toolkit", u:"https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/books/data-warehouse-dw-toolkit/", d:"Kimball. Dimensional modelling from first principles; still the reference."},
+  {t:"Analyzing Data with Power BI and Power Pivot for Excel", u:"https://www.sqlbi.com/books/analyzing-data-with-microsoft-power-bi-and-power-pivot-for-excel/", d:"Russo and Ferrari's modelling book — shorter and more focused than the DAX one."},
+  {t:"Many-to-many relationship guidance", u:"https://learn.microsoft.com/en-us/power-bi/guidance/relationships-many-to-many", d:"Read before Day 2 Block 3."}
+ ]},
+ {g:"Performance and tooling", items:[
+  {t:"DAX Studio", u:"https://daxstudio.org/", d:"Server Timings, Query Plan, VertiPaq Analyzer, benchmarking. Free, essential."},
+  {t:"Tabular Editor", u:"https://tabulareditor.com/", d:"Version 2 is free and enough for calculation groups, OLS and Best Practice Analyzer."},
+  {t:"Best Practice Analyzer rules", u:"https://github.com/microsoft/Analysis-Services/tree/master/BestPracticeRules", d:"The standard rule set to load into Tabular Editor."},
+  {t:"ALM Toolkit", u:"https://alm-toolkit.com/", d:"Schema diff and deployment between models — the Pro-licence alternative to deployment pipelines."},
+  {t:"Bravo for Power BI", u:"https://bravo.bi/", d:"Model analysis, unused columns, date table generation, DAX formatting, in one small free tool."},
+  {t:"VertiPaq Analyzer", u:"https://www.sqlbi.com/tools/vertipaq-analyzer/", d:"Also built into DAX Studio. The Day 2 morning tool."}
+ ]},
+ {g:"Video and channels", items:[
+  {t:"Guy in a Cube", u:"https://www.youtube.com/@GuyInACube", d:"Adam Saxton and Patrick LeBlanc. Service, gateways, refresh and admin topics, from inside Microsoft."},
+  {t:"SQLBI", u:"https://www.youtube.com/@SQLBI", d:"The deepest free DAX and modelling content anywhere."},
+  {t:"Curbal", u:"https://www.youtube.com/@CurbalEN", d:"Ruth Pozuelo Martinez. Short, precise, technique-focused videos."},
+  {t:"RADACAD", u:"https://www.youtube.com/@RADACAD", d:"Modelling, RLS, Power Query and architecture."},
+  {t:"Havens Consulting", u:"https://www.youtube.com/@HavensConsulting", d:"Report design and advanced visualisation technique."},
+  {t:"Microsoft Learn — Power BI learning paths", u:"https://learn.microsoft.com/en-us/training/powerplatform/power-bi", d:"Free, structured, and mapped to the PL-300 objectives."}
+ ]},
+ {g:"Sample data and practice", items:[
+  {t:"Power BI sample datasets", u:"https://learn.microsoft.com/en-us/power-bi/create-reports/sample-datasets", d:"The built-in samples, including .pbix downloads."},
+  {t:"Contoso Data Generator", u:"https://github.com/sql-bi/Contoso-Data-Generator-V2", d:"Generate a Contoso database at any size — the right way to build a model big enough to be slow."},
+  {t:"AdventureWorks sample databases", u:"https://learn.microsoft.com/en-us/sql/samples/adventureworks-install-configure", d:"The classic dimensional sample used for the Day 2 star schema lab."},
+  {t:"Workout Wednesday for Power BI", u:"https://workout-wednesday.com/power-bi-challenge/", d:"A weekly challenge to keep the skills alive after the course."}
+ ]},
+ {g:"Community and staying current", items:[
+  {t:"Fabric Community — Power BI forums", u:"https://community.fabric.microsoft.com/", d:"Where to ask, and where most search results land."},
+  {t:"Power BI Ideas", u:"https://ideas.fabric.microsoft.com/", d:"Vote for the feature you are missing, and see what is already planned."},
+  {t:"Power BI blog", u:"https://powerbi.microsoft.com/en-us/blog/", d:"The monthly feature summary in full."},
+  {t:"Power Platform release plans", u:"https://learn.microsoft.com/en-us/power-platform/release-plan/", d:"What is coming in the next wave, with dates."},
+  {t:"PL-300 certification", u:"https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/", d:"The natural certification target after this week."}
+ ]}
+];
+
+/* ============================ IDS + STATE ============================ */
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+var TABS=[], IDS={};
+(function(){
+  var setupIds=[];
+  SETUP.groups.forEach(function(g,gi){ g.items.forEach(function(it,ii){ it.id="s"+gi+"i"+ii; setupIds.push(it.id); }); });
+  TABS.push({key:"setup", label:"Setup"}); IDS.setup=setupIds;
+  DAYS.forEach(function(day,di){
+    var ids=[];
+    day.blocks.forEach(function(b,bi){
+      b.topics.forEach(function(t,ti){ t.id="d"+di+"b"+bi+"t"+ti; ids.push(t.id); });
+      if(b.lab){ b.lab.id="d"+di+"b"+bi+"lab"; ids.push(b.lab.id); }
+    });
+    TABS.push({key:"d"+di, label:day.n}); IDS["d"+di]=ids;
+  });
+  TABS.push({key:"res", label:"Resources"}); IDS.res=[];
+})();
+var ALL=[]; TABS.forEach(function(t){ ALL=ALL.concat(IDS[t.key]); });
+
+var state=new Set();
+var active=(function(){ try{ return localStorage.getItem("pbi5day.tab")||"setup"; }catch(e){ return "setup"; } })();
+if(!IDS.hasOwnProperty(active)) active="setup";
+
+var LS="pbi5day.progress.v1";
+function toObj(){ var o={}; state.forEach(function(k){o[k]=true;}); return o; }
+function saveLocal(){ try{ localStorage.setItem(LS, JSON.stringify({checked:toObj()})); }catch(e){} }
+(function(){ try{ var raw=localStorage.getItem(LS); if(raw){ var o=JSON.parse(raw); if(o&&o.checked) Object.keys(o.checked).forEach(function(k){ if(o.checked[k]) state.add(k); }); } }catch(e){} })();
+
+/* ============================ PERSISTENCE ============================ */
+var docRef=null, writing=false, pendingWrite=false, saveTimer=null, firstSnap=true;
+function note(msg){ var n=document.getElementById("saveNote"); if(n) n.textContent=msg; }
+function flush(){
+  if(!docRef||writing){ if(docRef) pendingWrite=true; return; }
+  writing=true; pendingWrite=false;
+  docRef.set({checked:toObj(), updatedAt:new Date().toISOString()}).then(function(){
+    writing=false; if(pendingWrite) flush();
+  }).catch(function(err){
+    writing=false;
+    if(err&&err.code==="invalid_argument"){ docRef=null; note("Progress is saved in this browser only (no write access to shared storage)."); }
+    else if(err&&err.code==="revoked"){ docRef=null; note("Progress is saved in this browser only."); }
+    else if(pendingWrite){ pendingWrite=false; setTimeout(flush,1200); }
+  });
+}
+function queueSave(){ saveLocal(); if(!docRef) return; clearTimeout(saveTimer); saveTimer=setTimeout(flush,700); }
+(function(){
+  if(!(window.claude&&window.claude.use)) return;
+  window.claude.use("db").then(function(db){
+    if(!db){ note("Progress is saved in this browser."); return; }
+    docRef=db.doc("progress/tracker");
+    note("Progress is saved to this page and follows you across devices.");
+    docRef.onSnapshot(function(snap){
+      if(snap.metadata&&snap.metadata.hasPendingWrites) return;
+      var remote=(snap.exists&&snap.data()&&snap.data().checked)||{};
+      if(firstSnap){
+        firstSnap=false;
+        var before=state.size;
+        Object.keys(remote).forEach(function(k){ if(remote[k]) state.add(k); });
+        render();
+        if(state.size!==before||state.size!==Object.keys(remote).length) queueSave();
+      } else {
+        state=new Set(Object.keys(remote).filter(function(k){return remote[k];}));
+        saveLocal(); render();
+      }
+    }, function(err){
+      docRef=null;
+      note(err&&err.code==="not_granted" ? "Progress is saved in this browser." : "Shared saving is unavailable; progress is saved in this browser.");
+    });
+  }).catch(function(){ note("Progress is saved in this browser."); });
+})();
+
+/* ============================ RENDER ============================ */
+var CIRC=113.097;
+function count(ids){ var d=0; ids.forEach(function(i){ if(state.has(i)) d++; }); return d; }
+function updateMeters(){
+  var done=count(ALL), pct=ALL.length? Math.round(done/ALL.length*100):0;
+  document.getElementById("ringfg").setAttribute("stroke-dashoffset", String(CIRC-CIRC*(pct/100)));
+  document.getElementById("pctTxt").textContent=pct+"%";
+  document.getElementById("cntTxt").textContent=done+" / "+ALL.length+" done";
+  TABS.forEach(function(t){
+    var el=document.querySelector('[data-tab="'+t.key+'"] .pct'); if(!el) return;
+    var ids=IDS[t.key]; el.textContent= ids.length ? count(ids)+"/"+ids.length : "";
+  });
+}
+function renderTabs(){
+  document.getElementById("tabs").innerHTML=TABS.map(function(t){
+    return '<button class="tab" role="tab" type="button" data-tab="'+t.key+'" aria-selected="'+(t.key===active)+'">'+
+      esc(t.label)+'<span class="pct"></span></button>';
+  }).join("");
+}
+function item(id,t,d,pill){
+  var on=state.has(id);
+  return '<li class="item'+(on?" done":"")+'" data-id="'+id+'">'+
+    '<button class="chk" type="button" role="checkbox" aria-checked="'+on+'" aria-label="'+esc(t)+'">'+
+      '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.6 6.2 4.4 9 10.4 3"/></svg></button>'+
+    '<div class="itxt"><div class="t">'+esc(t)+(pill?'<span class="pill '+pill+'">'+(pill==="demo"?"demo only":"2026")+'</span>':'')+'</div>'+
+    (d?'<div class="d">'+esc(d)+'</div>':'')+'</div></li>';
+}
+function blockHTML(b,slot,di,bi){
+  var ids=b.topics.map(function(t){return t.id;}); if(b.lab) ids.push(b.lab.id);
+  var h='<article class="block"><div class="bhead">'+
+    '<div class="btime"><span class="clock">'+esc(slot.t)+'</span><span class="dur">'+esc(slot.d)+'</span><span class="seg">'+esc(slot.seg)+'</span></div>'+
+    '<div class="bmain"><h3>'+esc(b.title)+'</h3><p class="goal">'+esc(b.goal)+'</p></div>'+
+    '<div class="bcount">'+count(ids)+'/'+ids.length+'</div></div><div class="bbody">';
+  h+='<ul class="list">'+b.topics.map(function(t){return item(t.id,t.t,t.d,t.pill);}).join("")+'</ul>';
+  if(b.code) b.code.forEach(function(c){
+    h+='<div class="codelabel"><b>'+esc(c.lang)+'</b> · '+esc(c.label)+'</div><pre>'+esc(c.src)+'</pre>';
+  });
+  if(b.lab){
+    h+='<div class="sub lab"><h4>Hands-on lab</h4><div class="labname">'+esc(b.lab.title)+'</div>'+
+       '<ol class="steps">'+b.lab.steps.map(function(s){return '<li>'+esc(s)+'</li>';}).join("")+'</ol>'+
+       '<ul class="list" style="margin-top:8px">'+item(b.lab.id,"Lab completed by the room","Everyone has a working result before the next block starts.")+'</ul></div>';
+  }
+  if(b.traps) h+='<div class="sub trap"><h4>Traps to call out</h4><ul>'+b.traps.map(function(x){return '<li>'+esc(x)+'</li>';}).join("")+'</ul></div>';
+  if(b.links) h+='<div class="sub links"><h4>Learn it from</h4><div class="linkrow">'+b.links.map(function(l){
+      return '<a href="'+esc(l.u)+'" target="_blank" rel="noopener noreferrer">'+esc(l.t)+'</a>';}).join("")+'</div></div>';
+  return h+'</div></article>';
+}
+function renderDay(di){
+  var day=DAYS[di], ids=IDS["d"+di], done=count(ids), pct=ids.length?Math.round(done/ids.length*100):0;
+  var h='<section class="hero"><div class="hero-top"><span class="daynum">'+esc(day.n)+'</span></div>'+
+    '<h2>'+esc(day.title)+'</h2><p class="lede">'+esc(day.lede)+'</p>'+
+    '<div class="outcome"><span class="lbl">Outcome</span><p>'+esc(day.outcome)+'</p></div>'+
+    '<div class="dayprog"><div class="meta"><span>Day progress</span><span>'+done+' of '+ids.length+' · '+pct+'%</span></div>'+
+    '<div class="bar"><i style="width:'+pct+'%"></i></div></div></section><div class="sched">';
+  var bi=0;
+  SCHEDULE.forEach(function(slot){
+    if(slot.k==="break"){
+      h+='<div class="brk"><span class="t">'+esc(slot.t)+'</span><span class="ln"></span><span class="nm">'+esc(slot.n)+'</span><span class="ln"></span></div>';
+    } else { h+=blockHTML(day.blocks[bi],slot,di,bi); bi++; }
+  });
+  return h+'</div>';
+}
+function renderSetup(){
+  var ids=IDS.setup, done=count(ids), pct=ids.length?Math.round(done/ids.length*100):0;
+  var h='<section class="hero"><div class="hero-top"><span class="daynum">Before you start</span></div>'+
+    '<h2>A five-day Power BI intensive, block by block</h2><p class="lede">'+esc(SETUP.lede)+'</p>'+
+    '<div class="dayprog"><div class="meta"><span>Setup progress</span><span>'+done+' of '+ids.length+' · '+pct+'%</span></div>'+
+    '<div class="bar"><i style="width:'+pct+'%"></i></div></div></section>';
+  h+='<div class="sect"><h3>The week at a glance</h3><div class="map">'+SETUP.map.map(function(m){
+    return '<div class="mapcard"><span class="n">'+esc(m.n)+'</span><h4>'+esc(m.h)+'</h4><p>'+esc(m.p)+'</p></div>';}).join("")+'</div></div>';
+  h+='<div class="sect"><h3>Daily rhythm · 09:30 to 17:30</h3><div class="tblwrap"><table class="rhythm">'+
+     '<thead><tr><th>Time</th><th>Length</th><th>What happens</th></tr></thead><tbody>'+
+     '<tr><td>09:30 – 11:15</td><td>1h 45m</td><td>Block 1 — the heaviest conceptual material, while the room is freshest</td></tr>'+
+     '<tr class="br"><td>11:15 – 11:30</td><td>15m</td><td>Tea break</td></tr>'+
+     '<tr><td>11:30 – 13:15</td><td>1h 45m</td><td>Block 2 — build on Block 1, first substantial lab of the day</td></tr>'+
+     '<tr class="br"><td>13:15 – 14:00</td><td>45m</td><td>Lunch</td></tr>'+
+     '<tr><td>14:00 – 15:45</td><td>1h 45m</td><td>Block 3 — the applied, clinic-style session; heavy demonstration to beat the post-lunch dip</td></tr>'+
+     '<tr class="br"><td>15:45 – 16:00</td><td>15m</td><td>Tea break</td></tr>'+
+     '<tr><td>16:00 – 17:30</td><td>1h 30m</td><td>Block 4 — shortest and most hands-on; ends with the recap quiz and the parking lot</td></tr>'+
+     '</tbody></table></div><p class="note" style="margin-top:12px">33 hours 45 minutes of teaching time across twenty blocks.</p></div>';
+  SETUP.groups.forEach(function(g){
+    h+='<div class="sect"><h3>'+esc(g.title)+'</h3><div class="card"><ul class="list">'+
+       g.items.map(function(it){return item(it.id,it.t,it.d);}).join("")+'</ul></div></div>';
+  });
+  h+='<div class="sect"><h3>Scope, structure and assessment</h3><div class="grid">'+SETUP.cards.map(function(c){
+    return '<div class="card"><h4>'+esc(c.h)+'</h4><p>'+esc(c.b)+'</p></div>';}).join("")+'</div></div>';
+  return h;
+}
+function renderRes(){
+  var h='<section class="hero"><div class="hero-top"><span class="daynum">Where to learn it</span></div>'+
+    '<h2>The resource shelf</h2><p class="lede">Everything referenced during the week, grouped so you can hand this page to a participant on Friday afternoon and it still earns its keep in six months.</p></section>';
+  RESOURCES.forEach(function(r){
+    h+='<div class="sect"><h3>'+esc(r.g)+'</h3><div class="grid">'+r.items.map(function(i){
+      return '<div class="card"><h4><a href="'+esc(i.u)+'" target="_blank" rel="noopener noreferrer">'+esc(i.t)+'</a></h4><p>'+esc(i.d)+'</p></div>';
+    }).join("")+'</div></div>';
+  });
+  return h;
+}
+function render(){
+  var v=document.getElementById("view");
+  v.innerHTML = active==="setup" ? renderSetup() : active==="res" ? renderRes() : renderDay(parseInt(active.slice(1),10));
+  document.querySelectorAll(".tab").forEach(function(b){ b.setAttribute("aria-selected", String(b.dataset.tab===active)); });
+  updateMeters();
+}
+function toggle(id){ if(state.has(id)) state.delete(id); else state.add(id); queueSave(); render(); }
+
+document.getElementById("tabs").addEventListener("click",function(e){
+  var b=e.target.closest(".tab"); if(!b) return;
+  active=b.dataset.tab; try{ localStorage.setItem("pbi5day.tab",active); }catch(err){}
+  render(); window.scrollTo({top:0,behavior:"instant"});
+});
+document.getElementById("view").addEventListener("click",function(e){
+  var row=e.target.closest(".item"); if(!row) return;
+  if(e.target.closest("a")) return;
+  toggle(row.dataset.id);
+});
+document.getElementById("view").addEventListener("keydown",function(e){
+  if(e.key!==" "&&e.key!=="Enter") return;
+  var c=e.target.closest(".chk"); if(!c) return;
+  e.preventDefault(); toggle(c.closest(".item").dataset.id);
+});
+document.getElementById("resetBtn").addEventListener("click",function(){
+  if(!state.size) return;
+  if(!confirm("Clear all "+state.size+" ticks and start the week again?")) return;
+  state=new Set(); queueSave(); render();
+});
+renderTabs(); render();
+</script>
